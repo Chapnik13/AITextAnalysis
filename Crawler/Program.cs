@@ -1,13 +1,43 @@
-﻿using System;
+﻿using AngleSharp;
+using Crawler.MockupWrappers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using System.Threading.Tasks;
 
 namespace Crawler
 {
-    
-    public class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static async Task Main()
         {
-            Console.WriteLine("Hello World!");
+            var builder = new HostBuilder()
+                .ConfigureAppConfiguration(ConfigureConfiguration)
+                .ConfigureServices(ConfigureServices)
+                .UseSerilog(ConfigureLogging);
+
+            await builder.RunConsoleAsync().ConfigureAwait(false);
+        }
+
+        private static void ConfigureConfiguration(HostBuilderContext context, IConfigurationBuilder config)
+        {
+
+        }
+
+        private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            services.AddHostedService<CrawlerService>();
+            services.AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()));
+            services.AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>();
+            services.AddTransient<IScienceDailyScraper, ScienceDailyScraper>();
+        }
+
+        private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)
+        {
+            logging
+                .MinimumLevel.Debug()
+                .WriteTo.Console();
         }
     }
 }
