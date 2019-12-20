@@ -52,7 +52,7 @@ namespace CrawlerTests
             var result = lexer.GetTokens(text);
             var expectedToken = new Token(eTokenType.StringValue, tokenValue);
 
-            Assert.Contains(result, token => CompareTokens(token, expectedToken));
+            Assert.Contains(result, token => token.Equals(expectedToken));
         }
 
         [Theory]
@@ -74,7 +74,7 @@ namespace CrawlerTests
             var result = lexer.GetTokens(text);
             var expectedToken = new Token(eTokenType.Number, tokenValue);
 
-            Assert.Contains(result, token => CompareTokens(token, expectedToken));
+            Assert.Contains(result, token => token.Equals(expectedToken));
         }
 
         [Theory]
@@ -96,9 +96,7 @@ namespace CrawlerTests
             var result = lexer.GetTokens(text);
             var expectedToken = new Token(eTokenType.Punctuation, tokenValue);
 
-            Assert.Contains(result, token => CompareTokens(token, expectedToken));
+            Assert.Contains(result, token => token.Equals(expectedToken));
         }
-
-        private bool CompareTokens(Token token1, Token token2) => token1.TokenType == token2.TokenType && token1.Value == token2.Value;
     }
 }

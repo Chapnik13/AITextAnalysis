@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Crawler.LexicalAnalyzer
 {
@@ -38,17 +39,9 @@ namespace Crawler.LexicalAnalyzer
 
         private Token? FindToken(string text)
         {
-            foreach (var tokenDefinition in tokenDefinitions)
-            {
-                var token = tokenDefinition.Match(text);
-
-                if (token != null)
-                {
-                    return token;
-                }
-            }
-
-            return null;
+            return tokenDefinitions
+                .Select(tokenDefinition => tokenDefinition.Match(text))
+                .FirstOrDefault(token => token != null);
         }
     }
 }

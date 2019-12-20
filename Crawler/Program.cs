@@ -47,7 +47,8 @@ namespace Crawler
 
             logging
                 .MinimumLevel.Verbose()
-                .WriteTo.Conditional(_ => logConfig.WriteToConsole, configuration => configuration.Console(logConfig.MinimumConsoleLevel))
+                .WriteTo.Conditional(_ => logConfig.WriteToConsole, 
+                    configuration => configuration.Console(logConfig.MinimumConsoleLevel))
                 .WriteTo.File(logConfig.FilePath, logConfig.MinimumFileLevel);
         }
     }

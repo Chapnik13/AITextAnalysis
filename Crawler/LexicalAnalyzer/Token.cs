@@ -1,4 +1,6 @@
-﻿namespace Crawler.LexicalAnalyzer
+﻿using System;
+
+namespace Crawler.LexicalAnalyzer
 {
     public class Token
     {
@@ -9,6 +11,17 @@
         {
             TokenType = tokenType;
             Value = value;
+        }
+
+        public override bool Equals(object? other)
+        {
+            return other is Token otherToken &&
+                   (TokenType == otherToken.TokenType && Value == otherToken.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(TokenType, Value);
         }
     }
 }

@@ -1,5 +1,5 @@
+using System;
 using Crawler;
-using Crawler.Exceptions;
 using Crawler.MockupWrappers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -48,12 +48,13 @@ namespace CrawlerTests
         }
 
         [Fact]
-        public async Task ScrapAsync_ShouldThrowAnException_WhenSelectorNotFound()
+        public async Task ScrapAsync_ShouldReturnEmptyText_WhenSelectorNotFound()
         {
             nodes.Clear();
 
-            await Assert.ThrowsAsync<ScrapFailedException>(RunScrapAsync)
-                .ConfigureAwait(false);
+            var result = await RunScrapAsync().ConfigureAwait(false);
+
+            Assert.Equal(string.Empty, result);
         }
 
         [Theory]
@@ -61,12 +62,13 @@ namespace CrawlerTests
         [InlineData(" ")]
         [InlineData("\t")]
         [InlineData("\n")]
-        public async Task ScrapAsync_ShouldThrowAnException_WhenHtmlNodeTextIsEmpty(string htmlNodeText)
+        public async Task ScrapAsync_ShouldReturnEmptyText_WhenHtmlNodeTextIsEmpty(string htmlNodeText)
         {
             Mock.Get(node).Setup(n => n.Text()).Returns(htmlNodeText);
 
-            await Assert.ThrowsAsync<ScrapFailedException>(RunScrapAsync)
-                .ConfigureAwait(false);
+            var result = await RunScrapAsync().ConfigureAwait(false);
+
+            Assert.True(string.IsNullOrWhiteSpace(result));
         }
 
         [Fact]
