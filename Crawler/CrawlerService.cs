@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Crawler.LexicalAnalyzer;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,15 +9,28 @@ namespace Crawler
     public class CrawlerService : BackgroundService
     {
         private readonly IScienceDailyScraper scienceDailyScraper;
+        private readonly ILexer lexer;
 
-        public CrawlerService(IScienceDailyScraper scienceDailyScraper)
+        public CrawlerService(IScienceDailyScraper scienceDailyScraper, ILexer lexer)
         {
             this.scienceDailyScraper = scienceDailyScraper;
+            this.lexer = lexer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var text = await scienceDailyScraper.ScrapAsync("https://www.sciencedaily.com/releases/2019/12/191213143307.htm", cancellationToken).ConfigureAwait(false);
+            Console.WriteLine("Enter url");
+            var url = Console.ReadLine();
+
+            var text = await scienceDailyScraper.ScrapAsync(url, cancellationToken)
+                .ConfigureAwait(false);
+
+            var tokens = lexer.GetTokens(text);
+
+            foreach (var token in tokens)
+            {
+                Console.Write(token.Value + " ");
+            }
         }
     }
 }

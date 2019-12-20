@@ -1,10 +1,10 @@
-﻿using Crawler.MockupWrappers;
+﻿using Crawler.Exceptions;
+using Crawler.MockupWrappers;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Crawler.Exceptions;
 
 namespace Crawler
 {

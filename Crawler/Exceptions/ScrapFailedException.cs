@@ -11,7 +11,7 @@ namespace Crawler.Exceptions
             return new ScrapFailedException();
         }
 
-        private ScrapFailedException()
+        public ScrapFailedException()
         {
         }
 
