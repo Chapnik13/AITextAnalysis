@@ -4,20 +4,21 @@ namespace Crawler.LexicalAnalyzer
 {
     public class TokenDefinition
     {
-        private readonly Regex regex;
-        private readonly eTokenType tokenType;
+        private Regex regex = new Regex(string.Empty);
 
-        public TokenDefinition(eTokenType tokenType, string regexPattern)
+        public eTokenType TokenType { get; set; }
+
+        public string Pattern
         {
-            regex = new Regex(regexPattern);
-            this.tokenType = tokenType;
+            get => regex.ToString();
+            set => regex = new Regex(value);
         }
 
         public Token? Match(string text)
         {
             var match = regex.Match(text);
 
-            return match.Success ? new Token(tokenType, match.Value) : null;
+            return match.Success ? new Token(TokenType, match.Value) : null;
         }
     }
 }

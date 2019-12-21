@@ -27,7 +27,7 @@ namespace Crawler
 
             var nodes = document.QuerySelectorAll(SELECTOR).ToList();
 
-            if (nodes.Count == 0)
+            if (!nodes.Any())
             {
                 logger.LogError("Could not find {selector} in {address}", SELECTOR, address);
 

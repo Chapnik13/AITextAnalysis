@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq;
+using Crawler.Configs;
 using Xunit;
 
 namespace CrawlerTests
@@ -12,7 +13,7 @@ namespace CrawlerTests
 
         public LexerTests()
         {
-            lexer = new Lexer(Mock.Of<ILogger<Lexer>>());
+            lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), new LexerConfig());
         }
 
         [Theory]
