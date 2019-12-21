@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Crawler.Exceptions;
 
 namespace Crawler
 {
@@ -26,25 +25,18 @@ namespace Crawler
             var document = await context.OpenAsync(address, cancellationToken).ConfigureAwait(false);
             logger.LogDebug("Opened document from {address}", address);
 
-            var nodes = document.QuerySelectorAll(SELECTOR);
+            var nodes = document.QuerySelectorAll(SELECTOR).ToList();
 
-            if (!nodes.Any())
+            if (nodes.Count == 0)
             {
                 logger.LogError("Could not find {selector} in {address}", SELECTOR, address);
-                throw new ScrapFailedException($"Could not find {SELECTOR} in {address}");
+
+                return string.Empty;
             }
 
             logger.LogDebug("Extracted {selector} from document", SELECTOR);
 
             var text = GetText(nodes);
-
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                logger.LogError("There was no text in {address} in {selector}", address, SELECTOR);
-                throw new ScrapFailedException($"There was no text in {address} {SELECTOR}");
-            }
-
-            logger.LogDebug("Extracted text from {selector}", SELECTOR);
 
             logger.LogInformation("Extracted text from {address} {selector}", address, SELECTOR);
 
