@@ -1,5 +1,5 @@
-﻿using System;
-using AngleSharp;
+﻿using AngleSharp;
+using Crawler.Configs;
 using Crawler.LexicalAnalyzer;
 using Crawler.MockupWrappers;
 using Microsoft.Extensions.Configuration;
@@ -7,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Threading.Tasks;
-using Crawler.Configs;
-using Serilog.Events;
+using Crawler.ExtensionMethods;
+using Microsoft.Extensions.Options;
 
 namespace Crawler
 {
@@ -33,6 +33,8 @@ namespace Crawler
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
+            services.Configure<LexerConfig>(context.Configuration.GetSection("Lexer"));
+
             services.AddHostedService<CrawlerService>();
             services.AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()));
             services.AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>();
@@ -47,7 +49,7 @@ namespace Crawler
 
             logging
                 .MinimumLevel.Verbose()
-                .WriteTo.Conditional(_ => logConfig.WriteToConsole, 
+                .WriteTo.Conditional(_ => logConfig.WriteToConsole,
                     configuration => configuration.Console(logConfig.MinimumConsoleLevel))
                 .WriteTo.File(logConfig.FilePath, logConfig.MinimumFileLevel);
         }

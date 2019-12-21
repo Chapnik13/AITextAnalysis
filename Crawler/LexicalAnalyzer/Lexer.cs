@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Crawler.Configs;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,18 +7,12 @@ namespace Crawler.LexicalAnalyzer
 {
     public class Lexer : ILexer
     {
-        private readonly List<TokenDefinition> tokenDefinitions;
+        private readonly LexerConfig config;
         private readonly ILogger logger;
 
-        public Lexer(ILogger<Lexer> logger)
+        public Lexer(ILogger<Lexer> logger, LexerConfig config)
         {
-            tokenDefinitions = new List<TokenDefinition>
-            {
-                new TokenDefinition(eTokenType.StringValue, "^[A-Za-z]+"),
-                new TokenDefinition(eTokenType.Number, "^[0-9]+"),
-                new TokenDefinition(eTokenType.Punctuation, @"^[,\.]")
-            };
-
+            this.config = config;
             this.logger = logger;
         }
 
@@ -39,7 +34,7 @@ namespace Crawler.LexicalAnalyzer
 
         private Token? FindToken(string text)
         {
-            return tokenDefinitions
+            return config.TokensDefinitions
                 .Select(tokenDefinition => tokenDefinition.Match(text))
                 .FirstOrDefault(token => token != null);
         }
