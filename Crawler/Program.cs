@@ -1,5 +1,5 @@
-﻿using System;
-using AngleSharp;
+﻿using AngleSharp;
+using Crawler.Configs;
 using Crawler.LexicalAnalyzer;
 using Crawler.MockupWrappers;
 using Microsoft.Extensions.Configuration;
@@ -7,12 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Threading.Tasks;
-using Crawler.Configs;
-using Serilog.Events;
+using Crawler.DeJargonizer;
 
 namespace Crawler
 {
-    public static class Program
+	public static class Program
     {
         public static async Task Main()
         {
@@ -33,11 +32,16 @@ namespace Crawler
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddHostedService<CrawlerService>();
-            services.AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()));
-            services.AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>();
-            services.AddTransient<IScienceDailyScraper, ScienceDailyScraper>();
-            services.AddTransient<ILexer, Lexer>();
+			services.AddOptions();
+			services.Configure<WordsCountMatrixConfig>(context.Configuration.GetSection("WordsCountMatrix"));
+	        services.Configure<WordsCountThresholdsConfig>(context.Configuration.GetSection("WordsCountThresholds"));
+
+	        services.AddHostedService<CrawlerService>()
+		        .AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()))
+		        .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
+		        .AddTransient<IScienceDailyScraper, ScienceDailyScraper>()
+		        .AddTransient<ILexer, Lexer>()
+		        .AddTransient<IWordsCountLoader, WordsCountLoader>();
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)
