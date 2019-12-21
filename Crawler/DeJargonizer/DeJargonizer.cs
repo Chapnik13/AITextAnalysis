@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using Crawler.Configs;
+using Microsoft.Extensions.Options;
 
 namespace Crawler.DeJargonizer
 {
-	public class DeJargonizer
+	public class DeJargonizer : IDeJargonizer
 	{
 		private readonly Lazy<Dictionary<string, int>> wordsCount;
 		private readonly WordsCountThresholdsConfig wordsCountThresholds;
 
-		public DeJargonizer(IWordsCountLoader wordsCountLoader, WordsCountThresholdsConfig wordsCountThresholdsConfig)
+		public DeJargonizer(IWordsCountLoader wordsCountLoader, IOptions<WordsCountThresholdsConfig> wordsCountThresholdsConfig)
 		{
-			wordsCountThresholds = wordsCountThresholdsConfig;
+			wordsCountThresholds = wordsCountThresholdsConfig.Value;
 			wordsCount = new Lazy<Dictionary<string, int>>(wordsCountLoader.Load);
 		}
 

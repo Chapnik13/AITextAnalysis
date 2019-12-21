@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Crawler.Configs;
 using Crawler.DeJargonizer;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -29,9 +30,13 @@ namespace CrawlerTests
 					{ "result", 1541 }
 				});
 
-			deJargonizer = new DeJargonizer(
-				wordsCountLoader,
-				new WordsCountThresholdsConfig { CommonWordsThreshold = 1000, NormalWordsThreshold = 50 }
+			var wordsCountThresholdsConfigOptions = Mock.Of<IOptions<WordsCountThresholdsConfig>>();
+
+			Mock.Get(wordsCountThresholdsConfigOptions)
+				.Setup(w => w.Value)
+				.Returns(new WordsCountThresholdsConfig {CommonWordsThreshold = 1000, NormalWordsThreshold = 50});
+
+			deJargonizer = new DeJargonizer(wordsCountLoader,wordsCountThresholdsConfigOptions
 			);
 		}
 
