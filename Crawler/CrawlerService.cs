@@ -1,33 +1,25 @@
-﻿using Crawler.LexicalAnalyzer;
+﻿using Crawler.Analyzers;
+using Crawler.LexicalAnalyzer;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Crawler.Configs;
-using Crawler.DeJargonizer;
-using Microsoft.Extensions.Options;
 
 namespace Crawler
 {
-    public class CrawlerService : BackgroundService
+	public class CrawlerService : BackgroundService
     {
         private readonly IScienceDailyScraper scienceDailyScraper;
         private readonly ILexer lexer;
         private readonly IHostApplicationLifetime applicationLifetime;
-        private readonly DeJargonizer.DeJargonizer deJargonizer;
+        private readonly IWordsAnalyzer wordsAnalyzer;
 
-        public CrawlerService(
-	        IScienceDailyScraper scienceDailyScraper,
-	        ILexer lexer,
-	        IHostApplicationLifetime applicationLifetime,
-	        IWordsCountLoader wordsCountLoader,
-	        IOptions<WordsCountThresholdsConfig> wordsCountThresholdsConfig)
+        public CrawlerService(IScienceDailyScraper scienceDailyScraper, ILexer lexer, IHostApplicationLifetime applicationLifetime, IWordsAnalyzer wordsAnalyzer)
         {
             this.scienceDailyScraper = scienceDailyScraper;
             this.lexer = lexer;
             this.applicationLifetime = applicationLifetime;
-            deJargonizer = new DeJargonizer.DeJargonizer(wordsCountLoader, wordsCountThresholdsConfig.Value);
+            this.wordsAnalyzer = wordsAnalyzer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -45,12 +37,17 @@ namespace Crawler
 
             var tokens = lexer.GetTokens(text);
 
-            var score = deJargonizer.Analyze(tokens.Where(t => t.TokenType == eTokenType.StringValue).Select(t => t.Value)).Score;
+            var averageLength = wordsAnalyzer.CalculateAverageLength(tokens);
+            var standardDeviation = wordsAnalyzer.CalculateStandardDeviation(tokens);
+            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(tokens);
 
             Console.WriteLine(text);
-            Console.WriteLine($"Score: {score}");
+            Console.WriteLine($"average length: {averageLength}");
+            Console.WriteLine($"standard deviation: {standardDeviation}");
+            Console.WriteLine($"deJargonizer score: {deJargonizerResult.Score}");
+            Console.WriteLine($"deJargonizer rare words percentage: {deJargonizerResult.RareWordsPercentage}");
 
-			applicationLifetime.StopApplication();
+            applicationLifetime.StopApplication();
         }
     }
 }

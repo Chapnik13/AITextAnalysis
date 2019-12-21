@@ -1,9 +1,10 @@
-﻿using Crawler;
+﻿using Crawler.Analyzers;
 using Crawler.Exceptions;
+using Crawler.LexicalAnalyzer;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
-using Crawler.LexicalAnalyzer;
+using Crawler.DeJargonizer;
 using Xunit;
 
 namespace CrawlerTests
@@ -14,7 +15,7 @@ namespace CrawlerTests
 
 		public WordsAnalyzerTests()
 		{
-			wordsAnalyzer = new WordsAnalyzer();
+			wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>());
 		}
 
 		[Fact]

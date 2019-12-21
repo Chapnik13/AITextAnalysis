@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Threading.Tasks;
+using Crawler.Analyzers;
 using Crawler.DeJargonizer;
 
 namespace Crawler
@@ -41,7 +42,9 @@ namespace Crawler
 		        .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
 		        .AddTransient<IScienceDailyScraper, ScienceDailyScraper>()
 		        .AddTransient<ILexer, Lexer>()
-		        .AddTransient<IWordsCountLoader, WordsCountLoader>();
+		        .AddTransient<IWordsCountLoader, WordsCountLoader>()
+		        .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
+		        .AddTransient<IWordsAnalyzer, WordsAnalyzer>();
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)
