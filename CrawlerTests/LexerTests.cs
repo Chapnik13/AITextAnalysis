@@ -1,8 +1,10 @@
-﻿using Crawler.LexicalAnalyzer;
+﻿using System.Collections.Generic;
+using Crawler.LexicalAnalyzer;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq;
 using Crawler.Configs;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace CrawlerTests
@@ -10,10 +12,17 @@ namespace CrawlerTests
     public class LexerTests
     {
         private readonly ILexer lexer;
+        private readonly LexerConfig config;
 
         public LexerTests()
         {
-            lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), new LexerConfig());
+            var options = Mock.Of<IOptions<LexerConfig>>();
+            config = new LexerConfig();
+
+            Mock.Get(options).Setup(c => c.Value).Returns(config);
+
+
+            lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), options);
         }
 
         [Theory]
@@ -32,6 +41,12 @@ namespace CrawlerTests
         [InlineData("Hello12", 2)]
         public void GetTokens_ShouldReturnMultipleTokens_WhenTextContainsMultipleWords(string text, int amountOfTokens)
         {
+            config.TokensDefinitions = new[]
+            {
+                new TokenDefinition { TokenType = eTokenType.StringValue, Pattern = "^[a-zA-Z]+" },
+                new TokenDefinition { TokenType = eTokenType.Number, Pattern = "^[0-9]+" }
+            };
+
             Assert.Equal(amountOfTokens, lexer.GetTokens(text).Count());
         }
 
@@ -40,20 +55,14 @@ namespace CrawlerTests
         [InlineData("Bye[]12")]
         public void GetTokens_ShouldContainStringValueToken_WhenGivenTextWithStringValue(string text)
         {
+            config.TokensDefinitions = new[]
+            {
+                new TokenDefinition { TokenType = eTokenType.StringValue, Pattern = "^[a-zA-Z]+" }
+            };
+
             var result = lexer.GetTokens(text);
 
             Assert.Contains(result, token => token.TokenType == eTokenType.StringValue);
-        }
-
-        [Theory]
-        [InlineData("Hello", "Hello")]
-        [InlineData("Bye[]12", "Bye")]
-        public void GetTokens_ShouldContainCorrectStringValueToken_WhenGivenTextWithStringValue(string text, string tokenValue)
-        {
-            var result = lexer.GetTokens(text);
-            var expectedToken = new Token(eTokenType.StringValue, tokenValue);
-
-            Assert.Contains(result, token => token.Equals(expectedToken));
         }
 
         [Theory]
@@ -61,21 +70,14 @@ namespace CrawlerTests
         [InlineData("Bye[]12")]
         public void GetTokens_ShouldContainNumberToken_WhenGivenTextWithNumber(string text)
         {
+            config.TokensDefinitions = new[]
+            {
+                new TokenDefinition { TokenType = eTokenType.Number, Pattern = "^[0-9]+" }
+            };
+
             var result = lexer.GetTokens(text);
 
             Assert.Contains(result, token => token.TokenType == eTokenType.Number);
-        }
-
-
-        [Theory]
-        [InlineData("12", "12")]
-        [InlineData("Bye[]12", "12")]
-        public void GetTokens_ShouldContainCorrectNumberToken_WhenGivenTextWithNumber(string text, string tokenValue)
-        {
-            var result = lexer.GetTokens(text);
-            var expectedToken = new Token(eTokenType.Number, tokenValue);
-
-            Assert.Contains(result, token => token.Equals(expectedToken));
         }
 
         [Theory]
@@ -83,21 +85,14 @@ namespace CrawlerTests
         [InlineData("Bye.12")]
         public void GetTokens_ShouldContainPunctuationToken_WhenGivenTextWithPunctuation(string text)
         {
+            config.TokensDefinitions = new[]
+            {
+                new TokenDefinition { TokenType = eTokenType.Punctuation, Pattern = "^[,\\.]" }
+            };
+
             var result = lexer.GetTokens(text);
 
             Assert.Contains(result, token => token.TokenType == eTokenType.Punctuation);
-        }
-
-
-        [Theory]
-        [InlineData("Hello, World", ",")]
-        [InlineData("Bye.,12", ".")]
-        public void GetTokens_ShouldContainCorrectPunctuationToken_WhenGivenTextWithPunctuation(string text, string tokenValue)
-        {
-            var result = lexer.GetTokens(text);
-            var expectedToken = new Token(eTokenType.Punctuation, tokenValue);
-
-            Assert.Contains(result, token => token.Equals(expectedToken));
         }
     }
 }

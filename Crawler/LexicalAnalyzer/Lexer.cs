@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 namespace Crawler.LexicalAnalyzer
 {
@@ -10,9 +11,9 @@ namespace Crawler.LexicalAnalyzer
         private readonly LexerConfig config;
         private readonly ILogger logger;
 
-        public Lexer(ILogger<Lexer> logger, LexerConfig config)
+        public Lexer(ILogger<Lexer> logger, IOptions<LexerConfig> config)
         {
-            this.config = config;
+            this.config = config.Value;
             this.logger = logger;
         }
 

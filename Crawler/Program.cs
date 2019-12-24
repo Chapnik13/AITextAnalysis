@@ -33,9 +33,10 @@ namespace Crawler
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-			services.AddOptions();
-			services.Configure<WordsCountMatrixConfig>(context.Configuration.GetSection("WordsCountMatrix"));
-	        services.Configure<WordsCountThresholdsConfig>(context.Configuration.GetSection("WordsCountThresholds"));
+            services.AddOptions()
+                .Configure<WordsCountMatrixConfig>(context.Configuration.GetSection("WordsCountMatrix"))
+                .Configure<WordsCountThresholdsConfig>(context.Configuration.GetSection("WordsCountThresholds"))
+                .Configure<LexerConfig>(context.Configuration.GetSection("Lexer"));
 
 	        services.AddHostedService<CrawlerService>()
 		        .AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()))
