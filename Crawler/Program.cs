@@ -9,6 +9,7 @@ using Serilog;
 using System.Threading.Tasks;
 using Crawler.Analyzers;
 using Crawler.DeJargonizer;
+using Crawler.SiteScraper;
 
 namespace Crawler
 {
@@ -36,12 +37,13 @@ namespace Crawler
             services.AddOptions()
                 .Configure<WordsCountMatrixConfig>(context.Configuration.GetSection("WordsCountMatrix"))
                 .Configure<WordsCountThresholdsConfig>(context.Configuration.GetSection("WordsCountThresholds"))
-                .Configure<LexerConfig>(context.Configuration.GetSection("Lexer"));
+                .Configure<LexerConfig>(context.Configuration.GetSection("Lexer"))
+                .Configure<ScrapersConfig>(context.Configuration.GetSection("Scrapers"));
 
 	        services.AddHostedService<CrawlerService>()
 		        .AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()))
 		        .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
-		        .AddTransient<IScienceDailyScraper, ScienceDailyScraper>()
+		        .AddTransient<IScraper, Scraper>()
 		        .AddTransient<ILexer, Lexer>()
 		        .AddTransient<IWordsCountLoader, WordsCountLoader>()
 		        .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()

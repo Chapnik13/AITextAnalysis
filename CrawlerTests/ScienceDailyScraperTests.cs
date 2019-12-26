@@ -1,7 +1,8 @@
-using System;
-using Crawler;
+using Crawler.Configs;
 using Crawler.MockupWrappers;
+using Crawler.SiteScraper;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,15 +14,25 @@ namespace CrawlerTests
     public class ScienceDailyScraperTests
     {
         private const string A_TEXT = "Hello";
+        private const string PATTERN = "sciencedaily";
 
         private readonly INodeWrapper node;
         private readonly List<INodeWrapper> nodes;
-        private readonly ScienceDailyScraper scraper;
+        private readonly IScraper scraper;
+        private readonly ScrapersConfig config;
 
         public ScienceDailyScraperTests()
         {
             var context = Mock.Of<IBrowsingContextWrapper>();
             var document = Mock.Of<IDocumentWrapper>();
+            var options = Mock.Of<IOptions<ScrapersConfig>>();
+
+            config = new ScrapersConfig { ScrapesrDefinitions = new ScraperDefinition[]
+            {
+                new ScraperDefinition{Pattern = PATTERN, Selector = "div#text"}
+            } };
+
+            Mock.Get(options).Setup(c => c.Value).Returns(config);
 
             node = Mock.Of<INodeWrapper>();
             nodes = new List<INodeWrapper> { node };
@@ -34,7 +45,7 @@ namespace CrawlerTests
                 .Setup(d => d.QuerySelectorAll(It.IsAny<string>()))
                 .Returns(nodes);
 
-            scraper = new ScienceDailyScraper(context, Mock.Of<ILogger<ScienceDailyScraper>>());
+            scraper = new Scraper(context, Mock.Of<ILogger<Scraper>>(), options);
         }
 
         [Fact]
@@ -86,6 +97,6 @@ namespace CrawlerTests
         }
 
         private async Task<string> RunScrapAsync() =>
-            await scraper.ScrapAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()).ConfigureAwait(false);
+            await scraper.ScrapAsync(PATTERN, It.IsAny<CancellationToken>()).ConfigureAwait(false);
     }
 }
