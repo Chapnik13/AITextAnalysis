@@ -79,7 +79,7 @@ namespace CrawlerTests
 		[InlineData(2, "15", "33", "erf", "h8")]
 		public void CalculateNumbersAsDigits_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
 		{
-			var result = wordsAnalyzer.CalculateNumbersAsDigits(words.Select(w => new Token(eTokenType.StringValue, w)));
+			var result = wordsAnalyzer.CalculateNumbersAsDigits(words.Select(w => new Token(eTokenType.Number, w)));
 			Assert.Equal(expectedResult, result);
 		}
 

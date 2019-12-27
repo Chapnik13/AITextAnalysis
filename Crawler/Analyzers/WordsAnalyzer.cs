@@ -11,7 +11,11 @@ namespace Crawler.Analyzers
 {
 	public class WordsAnalyzer : IWordsAnalyzer
 	{
-		private IDeJargonizer deJargonizer;
+        private const string EmotionsFile = "Emotion.csv";
+        private const string NumbersFile = "Numbers.csv";
+        private const string QuestionsFile = "Questions.csv";
+
+        private IDeJargonizer deJargonizer;
 
 		public WordsAnalyzer(IDeJargonizer deJargonizer)
 		{
@@ -63,12 +67,12 @@ namespace Crawler.Analyzers
         /// <returns></returns>
         public int CalculateNumbersAsWords(IEnumerable<Token> tokens)
         {
-            var DigitStrings = new List<string>() { "zero", "one", "two", "three", "four", "five", "six", "seven", 
-                "eight", "nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen",
-                "eighteen", "nineteen", "twenty","thirty","fourty", "fifty","sixty","seventy","eighty","ninty",
-                "hundred","thousand","million","billion" };
+            var DigitStrings = new List<string>();
             var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
-            return words.Count(w=>DigitStrings.Any(D=>w.ToLower().Equals(D)));
+            var Filelines = File.ReadAllLines(NumbersFile);
+            DigitStrings.AddRange(Filelines.Select(line => line.ToLower()));
+            return words.Count(w=> DigitStrings.Contains(w.ToLower()));
+
            
 
         }
@@ -81,25 +85,21 @@ namespace Crawler.Analyzers
         public double CalculateEmotionWords(IEnumerable<Token> tokens)
         {
             var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
-            var Filelines = File.ReadAllLines("Emotion.csv");
-            var EmotionStrings = new List<string>(){};
-
-            foreach(string line in Filelines)
-            {
-                EmotionStrings.Add(line.ToLower());
-            }
-
+            var Filelines = File.ReadAllLines(EmotionsFile);
+            var EmotionStrings = new List<string>();
+            EmotionStrings.AddRange(Filelines.Select(line => line.ToLower()));
             return ((double)(words.Count(w => EmotionStrings.Any(E => w.ToLower().Equals(E)))) / (double)words.Count()) ;
+           
         }
 
         public int CalculateQuestionWords(IEnumerable<Token> tokens)
         {
             var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
-            var QuestionStrings = new List<string>(){"what","when","where","which","who","whom","whose","why", "how" ,"how far",
-                "how long","how many","how much","how old"};
+            var Filelines = File.ReadAllLines(QuestionsFile);
+            var QuestionStrings = new List<string>();
+            QuestionStrings.AddRange(Filelines.Select(line => line.ToLower()));
 
-            
-            return words.Count(w=>QuestionStrings.Any(E=>w.Equals(E)));
+            return words.Count(w=>QuestionStrings.Contains(w.ToLower()));
             
         }
 	}
