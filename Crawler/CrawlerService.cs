@@ -2,6 +2,8 @@
 using Crawler.LexicalAnalyzer;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Crawler.SiteScraper;
@@ -28,21 +30,22 @@ namespace Crawler
             Console.Write("Enter url ");
             var url = Console.ReadLine();
 
-            var text = await scraper.ScrapAsync(url, cancellationToken)
+            var stringParagraphs = await scraper.ScrapAsync(url, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (string.IsNullOrWhiteSpace(text))
+            if (!stringParagraphs.Any())
             {
                 Console.WriteLine($"No text was found at {url}");
             }
 
-            var tokens = lexer.GetTokens(text);
+            var tokenParagraphs = stringParagraphs.Select(paragraph => lexer.GetTokens(paragraph)).ToList();
+            var allTokens = tokenParagraphs.SelectMany(t => t).ToList();
 
-            var averageLength = wordsAnalyzer.CalculateAverageLength(tokens);
-            var standardDeviation = wordsAnalyzer.CalculateStandardDeviation(tokens);
-            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(tokens);
+            var averageLength = wordsAnalyzer.CalculateAverageLength(allTokens);
+            var standardDeviation = wordsAnalyzer.CalculateStandardDeviation(allTokens);
+            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(allTokens);
 
-            Console.WriteLine(text);
+            Console.WriteLine(stringParagraphs.Aggregate((s1, s2) => $"{s1}{Environment.NewLine}{s2}"));
             Console.WriteLine($"average length: {averageLength}");
             Console.WriteLine($"standard deviation: {standardDeviation}");
             Console.WriteLine($"deJargonizer score: {deJargonizerResult.Score}");
