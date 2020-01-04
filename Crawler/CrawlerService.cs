@@ -4,19 +4,20 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Crawler.SiteScraper;
 
 namespace Crawler
 {
 	public class CrawlerService : BackgroundService
     {
-        private readonly IScienceDailyScraper scienceDailyScraper;
+        private readonly IScraper scraper;
         private readonly ILexer lexer;
         private readonly IHostApplicationLifetime applicationLifetime;
         private readonly IWordsAnalyzer wordsAnalyzer;
 
-        public CrawlerService(IScienceDailyScraper scienceDailyScraper, ILexer lexer, IHostApplicationLifetime applicationLifetime, IWordsAnalyzer wordsAnalyzer)
+        public CrawlerService(IScraper scraper, ILexer lexer, IHostApplicationLifetime applicationLifetime, IWordsAnalyzer wordsAnalyzer)
         {
-            this.scienceDailyScraper = scienceDailyScraper;
+            this.scraper = scraper;
             this.lexer = lexer;
             this.applicationLifetime = applicationLifetime;
             this.wordsAnalyzer = wordsAnalyzer;
@@ -27,7 +28,7 @@ namespace Crawler
             Console.Write("Enter url ");
             var url = Console.ReadLine();
 
-            var text = await scienceDailyScraper.ScrapAsync(url, cancellationToken)
+            var text = await scraper.ScrapAsync(url, cancellationToken)
                 .ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(text))

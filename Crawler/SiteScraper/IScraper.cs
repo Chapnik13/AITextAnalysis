@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Crawler
+namespace Crawler.SiteScraper
 {
-    public interface IScienceDailyScraper
+    public interface IScraper
     {
         Task<string> ScrapAsync(string address, CancellationToken cancellationToken);
     }
