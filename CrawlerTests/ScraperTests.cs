@@ -100,10 +100,5 @@ namespace CrawlerTests
 
         private async Task<IEnumerable<string>> RunScrapAsync() =>
             await scraper.ScrapAsync(PATTERN, It.IsAny<CancellationToken>()).ConfigureAwait(false);
-
-        private string CombineEnumerableToText(IEnumerable<string> t)
-        {
-            return t.Aggregate((t1, t2) => t1 + t2);
-        }
     }
 }
