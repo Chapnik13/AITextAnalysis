@@ -16,12 +16,12 @@ namespace CrawlerTests
 
         public LexerTests()
         {
-            var options = Mock.Of<IOptions<LexerConfig>>();
+            var configOptions = Mock.Of<IOptions<LexerConfig>>();
             config = new LexerConfig();
 
-            Mock.Get(options).Setup(c => c.Value).Returns(config);
+            Mock.Get(configOptions).Setup(c => c.Value).Returns(config);
 
-            lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), options);
+            lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), configOptions);
         }
 
         [Theory]

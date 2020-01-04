@@ -26,14 +26,14 @@ namespace CrawlerTests
         {
             var context = Mock.Of<IBrowsingContextWrapper>();
             var document = Mock.Of<IDocumentWrapper>();
-            var options = Mock.Of<IOptions<ScrapersConfig>>();
+            var configOptions = Mock.Of<IOptions<ScrapersConfig>>();
 
             config = new ScrapersConfig { ScrapesrDefinitions = new[]
             {
                 new ScraperDefinition{Pattern = PATTERN, Selector = "div#text"}
             } };
 
-            Mock.Get(options).Setup(c => c.Value).Returns(config);
+            Mock.Get(configOptions).Setup(c => c.Value).Returns(config);
 
             node = Mock.Of<INodeWrapper>();
             nodes = new List<INodeWrapper> { node };
@@ -46,7 +46,7 @@ namespace CrawlerTests
                 .Setup(d => d.QuerySelectorAll(It.IsAny<string>()))
                 .Returns(nodes);
 
-            scraper = new Scraper(context, Mock.Of<ILogger<Scraper>>(), options);
+            scraper = new Scraper(context, Mock.Of<ILogger<Scraper>>(), configOptions);
         }
 
         [Fact]
