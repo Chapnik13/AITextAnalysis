@@ -21,7 +21,6 @@ namespace CrawlerTests
 
             Mock.Get(options).Setup(c => c.Value).Returns(config);
 
-
             lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), options);
         }
 
