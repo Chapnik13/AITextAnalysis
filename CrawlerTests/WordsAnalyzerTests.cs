@@ -106,7 +106,7 @@ namespace CrawlerTests
 		[InlineData(0.25, "Censored", "asd", "ss", "hh")]
 		public void CalculateEmotionWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
 		{
-			var result = (double)wordsAnalyzer.CalculateEmotionWords(words.Select(w => new Token(eTokenType.StringValue, w)));
+			var result = (double)wordsAnalyzer.CalculatePercentageEmotionWords(words.Select(w => new Token(eTokenType.StringValue, w)));
 			Assert.Equal(expectedResult, result);
 		}
 	}
