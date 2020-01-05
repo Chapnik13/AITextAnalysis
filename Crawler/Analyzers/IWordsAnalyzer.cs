@@ -16,7 +16,7 @@ namespace Crawler.Analyzers
 
         public int CalculateNumbersAsWords(IEnumerable<Token> tokens);
 
-        public double CalculateEmotionWords(IEnumerable<Token> tokens);
+        public double CalculatePercentageEmotionWords(IEnumerable<Token> tokens);
 
         public int CalculateQuestionWords(IEnumerable<Token> tokens);
     }
