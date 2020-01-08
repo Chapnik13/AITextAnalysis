@@ -1,16 +1,15 @@
 ﻿using Crawler.Analyzers;
 using Crawler.LexicalAnalyzer;
+using Crawler.SiteScraper;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Crawler.SiteScraper;
 
 namespace Crawler
 {
-	public class CrawlerService : BackgroundService
+    public class CrawlerService : BackgroundService
     {
         private readonly IScraper scraper;
         private readonly ILexer lexer;
@@ -30,22 +29,23 @@ namespace Crawler
             Console.Write("Enter url ");
             var url = Console.ReadLine();
 
-            var stringParagraphs = await scraper.ScrapAsync(url, cancellationToken)
+            var paragraphsStrings = await scraper.ScrapAsync(url, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!stringParagraphs.Any())
+            if (!paragraphsStrings.Any())
             {
                 Console.WriteLine($"No text was found at {url}");
             }
 
-            var tokenParagraphs = stringParagraphs.Select(paragraph => lexer.GetTokens(paragraph)).ToList();
-            var allTokens = tokenParagraphs.SelectMany(t => t).ToList();
+            var paragraphsTokens = paragraphsStrings.Select(paragraph => lexer.GetTokens(paragraph)).ToList();
+            var allTokens = paragraphsTokens.SelectMany(t => t).ToList();
+            var text = paragraphsStrings.Aggregate((s1, s2) => $"{s1}{Environment.NewLine}{s2}");
 
             var averageLength = wordsAnalyzer.CalculateAverageLength(allTokens);
             var standardDeviation = wordsAnalyzer.CalculateStandardDeviation(allTokens);
             var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(allTokens);
 
-            Console.WriteLine(stringParagraphs.Aggregate((s1, s2) => $"{s1}{Environment.NewLine}{s2}"));
+            Console.WriteLine(text);
             Console.WriteLine($"average length: {averageLength}");
             Console.WriteLine($"standard deviation: {standardDeviation}");
             Console.WriteLine($"deJargonizer score: {deJargonizerResult.Score}");
