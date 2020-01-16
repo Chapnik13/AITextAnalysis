@@ -29,14 +29,14 @@ namespace Crawler.Analyzers
 			return words.Any() ? (float)words.Average(w => w.Length) : 0;
 		}
 
-		public double CalculateStandardDeviation(IEnumerable<Token> tokens)
+		public double CalculateWordsLengthStandardDeviation(IEnumerable<Token> tokens)
 		{
 			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
 
 			if (words.Count() < 2) throw new StandardDeviationInvalidArgumentsAmountException();
 
 			var average = CalculateAverageLength(tokens);
-			var sumOfSquaresOfDifferences = words.Select(val => (val.Length - average) * (val.Length - average)).Sum();
+			var sumOfSquaresOfDifferences = words.Select(val => Math.Pow(val.Length - average, 2)).Sum();
 
 			return Math.Sqrt(sumOfSquaresOfDifferences / (words.Count() - 1));
 		}

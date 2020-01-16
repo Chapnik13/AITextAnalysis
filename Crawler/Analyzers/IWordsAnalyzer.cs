@@ -8,7 +8,7 @@ namespace Crawler.Analyzers
 	{
 		float CalculateAverageLength(IEnumerable<Token> tokens);
 
-		double CalculateStandardDeviation(IEnumerable<Token> tokens);
+		double CalculateWordsLengthStandardDeviation(IEnumerable<Token> tokens);
 
 		DeJargonizerResult CalculateDeJargonizer(IEnumerable<Token> tokens);
 
