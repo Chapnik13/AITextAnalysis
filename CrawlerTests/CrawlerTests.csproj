@@ -29,4 +29,16 @@
     <ProjectReference Include="..\Crawler\Crawler.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Emotion.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Numbers.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Questions.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
