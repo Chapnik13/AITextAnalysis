@@ -8,17 +8,17 @@ namespace Crawler.Analyzers
     {
         public float CalculateAverageLength(IEnumerable<IEnumerable<Token>> paragraphs)
         {
-            return paragraphs.CalculateAverageOfParagraphs(t => t.TokenType != eTokenType.Punctuation);
+            return paragraphs.CalculateAverageOfTokenGroups(t => t.TokenType != eTokenType.Punctuation);
         }
 
         public float CalculateAverageAmountOfCommaAndPeriod(IEnumerable<IEnumerable<Token>> paragraphs)
         {
-            return paragraphs.CalculateAverageOfParagraphs(t => t.Value == "." || t.Value == ",");
+            return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == "." || t.Value == ",");
         }
 
         public float CalculateAverageAmountOfSentences(IEnumerable<IEnumerable<Token>> paragraphs)
         {
-            return paragraphs.CalculateAverageOfParagraphs(t => t.Value == ".");
+            return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == ".");
         }
     }
 }

@@ -12,9 +12,9 @@ namespace Crawler.ExtensionMethods
             return tokens.Where(t => t.TokenType == tokenType).Select(t => t.Value);
         }
 
-        public static float CalculateAverageOfParagraphs(this IEnumerable<IEnumerable<Token>> paragraphs, Func<Token, bool> predicate)
+        public static float CalculateAverageOfTokenGroups(this IEnumerable<IEnumerable<Token>> tokenGroups, Func<Token, bool> predicate)
         {
-            return (float)paragraphs.Average(p => p.Count(predicate));
+            return (float)tokenGroups.Average(p => p.Count(predicate));
         }
     }
 }
