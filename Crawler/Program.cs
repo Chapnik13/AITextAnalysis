@@ -1,19 +1,19 @@
 ﻿using AngleSharp;
+using Crawler.Analyzers;
 using Crawler.Configs;
+using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;
 using Crawler.MockupWrappers;
+using Crawler.SiteScraper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Threading.Tasks;
-using Crawler.Analyzers;
-using Crawler.DeJargonizer;
-using Crawler.SiteScraper;
 
 namespace Crawler
 {
-	public static class Program
+    public static class Program
     {
         public static async Task Main()
         {
@@ -40,14 +40,15 @@ namespace Crawler
                 .Configure<LexerConfig>(context.Configuration.GetSection("Lexer"))
                 .Configure<ScrapersConfig>(context.Configuration.GetSection("Scrapers"));
 
-	        services.AddHostedService<CrawlerService>()
-		        .AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()))
-		        .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
-		        .AddTransient<IScraper, Scraper>()
-		        .AddTransient<ILexer, Lexer>()
-		        .AddTransient<IWordsCountLoader, WordsCountLoader>()
-		        .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
-		        .AddTransient<IWordsAnalyzer, WordsAnalyzer>();
+            services.AddHostedService<CrawlerService>()
+                .AddTransient<IBrowsingContext>(_ => BrowsingContext.New(Configuration.Default.WithDefaultLoader()))
+                .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
+                .AddTransient<IScraper, Scraper>()
+                .AddTransient<ILexer, Lexer>()
+                .AddTransient<IWordsCountLoader, WordsCountLoader>()
+                .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
+                .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
+                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>();
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)
@@ -57,7 +58,7 @@ namespace Crawler
 
             logging
                 .MinimumLevel.Verbose()
-                .WriteTo.Conditional(_ => logConfig.WriteToConsole, 
+                .WriteTo.Conditional(_ => logConfig.WriteToConsole,
                     configuration => configuration.Console(logConfig.MinimumConsoleLevel))
                 .WriteTo.File(logConfig.FilePath, logConfig.MinimumFileLevel);
         }
