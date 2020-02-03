@@ -30,7 +30,7 @@ namespace CrawlerTests
 
             config = new ScrapersConfig { ScrapesrDefinitions = new[]
             {
-                new ScraperDefinition{Pattern = PATTERN, Selector = "div#text"}
+                new ScraperDefinition{UrlPattern = PATTERN, Selector = "div#text"}
             } };
 
             Mock.Get(configOptions).Setup(c => c.Value).Returns(config);

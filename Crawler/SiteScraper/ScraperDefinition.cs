@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Crawler.SiteScraper
 {
@@ -6,19 +7,19 @@ namespace Crawler.SiteScraper
     {
         private Regex regex = new Regex(string.Empty);
 
-        public string Selector { get; set; }
+        public string TitleSelector { get; set; }
+        public string SubtitleSelector { get; set; }
+        public string TextSelector { get; set; }
 
-        public string Pattern
+        public string UrlPattern
         {
             get => regex.ToString();
             set => regex = new Regex(value);
         }
 
-        public string? Match(string url)
+        public bool Match(string url)
         {
-            var match = regex.Match(url);
-
-            return match.Success ? Selector : null;
+            return regex.Match(url).Success;
         }
     }
 }
