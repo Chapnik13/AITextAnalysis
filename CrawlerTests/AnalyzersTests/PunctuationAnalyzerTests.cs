@@ -27,7 +27,7 @@ namespace CrawlerTests
 				{
 					new TokenDefinition {TokenType = eTokenType.StringValue, Pattern = "^[a-zA-Z]+"},
 					new TokenDefinition {TokenType = eTokenType.Number, Pattern = "^[0-9]+"},
-					new TokenDefinition {TokenType = eTokenType.Punctuation, Pattern = "^[,\\.]"}
+					new TokenDefinition {TokenType = eTokenType.Punctuation, Pattern = "^[,\\.?!\"-:]"}
 				}
 			};
 
@@ -54,25 +54,22 @@ namespace CrawlerTests
 		}
 
 		[Theory]
-		[InlineData(1, ",fcbdrhdt,")]
-		[InlineData(3, ",gg bu bg ,")]
-		[InlineData(5, ", segs sgrsgs sgs sg hh,")]
+		[InlineData(1, ",?fcbdrhdt,")]
+		[InlineData(3, ",gg bu bg ??,")]
+		[InlineData(5, ", segs? sgrsgs ?sgs sg ?hh,")]
 		public void CalculateAverageWordCountBetweenPunctuations_ShouldReturnWordsCount_WhenOnePunctuationsPair(
 			int expectedResult, string sentence)
 		{
-			var result =
-				punctuationsAnalyzer.CalculateAverageWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
+			var result = punctuationsAnalyzer.CalculateAverageWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
 
 			Assert.Equal(expectedResult, result);
 		}
 
 		[Theory]
-		[InlineData(1, ",fcbdrhdt, sefsfesf,")]
-		[InlineData(2, ",gg bu bg , fdg.")]
-		[InlineData(4, ", segs sgrsgs sgs sg hh, gn gg gh.")]
-		public void
-			CalculateAverageWordCountBetweenPunctuations_ShouldReturnWordsCountAverage_WhenMoreThanOnePunctuationsPair(
-				int expectedResult, string sentence)
+		[InlineData(1, ",fcbdrhdt, !sefsfesf,")]
+		[InlineData(2, ",gg bu!! bg , fdg.")]
+		[InlineData(4, ", segs! sgrsgs sgs !sg !!hh, gn gg gh.")]
+		public void CalculateAverageWordCountBetweenPunctuations_ShouldReturnWordsCountAverage_WhenMoreThanOnePunctuationsPair(int expectedResult, string sentence)
 		{
 			var result =
 				punctuationsAnalyzer.CalculateAverageWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
@@ -100,12 +97,10 @@ namespace CrawlerTests
 		[Theory]
 		[InlineData(1, ",fcbdrhdt,")]
 		[InlineData(3, ",gg bu bg ,")]
-		[InlineData(5, ", segs sgrsgs sgs sg hh,")]
-		public void CalculateMaxWordCountBetweenPunctuations_ShouldReturnWordsCount_WhenOnePunctuationsPair(
-			int expectedResult, string sentence)
+		[InlineData(5, ", segs!! sgrsgs sgs sg hh,")]
+		public void CalculateMaxWordCountBetweenPunctuations_ShouldReturnWordsCount_WhenOnePunctuationsPair(int expectedResult, string sentence)
 		{
-			var result =
-				punctuationsAnalyzer.CalculateMaxWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
+			var result = punctuationsAnalyzer.CalculateMaxWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
 
 			Assert.Equal(expectedResult, result);
 		}
@@ -114,11 +109,9 @@ namespace CrawlerTests
 		[InlineData(2, ",fcbdrhdt, sefsf esf,")]
 		[InlineData(3, ",gg bu bg , fdg.")]
 		[InlineData(5, ", segs sgrsgs sgs sg hh, gn gg gh.")]
-		public void CalculateMaxWordCountBetweenPunctuations_ShouldReturnMaxWordsCount_WhenMoreThanOnePunctuationsPair(
-			int expectedResult, string sentence)
+		public void CalculateMaxWordCountBetweenPunctuations_ShouldReturnMaxWordsCount_WhenMoreThanOnePunctuationsPair(int expectedResult, string sentence)
 		{
-			var result =
-				punctuationsAnalyzer.CalculateMaxWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
+			var result = punctuationsAnalyzer.CalculateMaxWordsCountBetweenPunctuation(lexer.GetTokens(sentence).ToList());
 
 			Assert.Equal(expectedResult, result);
 		}
@@ -128,7 +121,7 @@ namespace CrawlerTests
 			CalculateStandardDeviation_ShouldThrowStandardDeviationInvalidArgumentsAmountException_WhenEmptyList()
 		{
 			Assert.Throws<StandardDeviationInvalidArgumentsAmountException>(
-				() => punctuationsAnalyzer.CalculateWordsCountsBetweenPunctuationStandardDeviation(new List<Token>())
+				() => punctuationsAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(new List<Token>())
 			);
 		}
 
@@ -136,7 +129,7 @@ namespace CrawlerTests
 		public void CalculateStandardDeviation_ShouldThrowStandardDeviationInvalidArgumentsAmountException_WhenOneWord()
 		{
 			Assert.Throws<StandardDeviationInvalidArgumentsAmountException>(
-				() => punctuationsAnalyzer.CalculateWordsCountsBetweenPunctuationStandardDeviation(
+				() => punctuationsAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(
 					new List<Token>
 					{
 						new Token(eTokenType.StringValue, It.IsAny<string>())
@@ -147,11 +140,9 @@ namespace CrawlerTests
 		[Theory]
 		[InlineData(0, ",efe, cse.")]
 		[InlineData(0.5, ", sf, wf regt, rth umu. aede werg,")]
-		public void CalculateStandardDeviation_ShouldReturnWordsLengthStandardDeviation_WhenMoreThanOneWords(
-			double expectedResult, string sentence)
+		public void CalculateStandardDeviation_ShouldReturnWordsLengthStandardDeviation_WhenMoreThanOneWords(double expectedResult, string sentence)
 		{
-			var result =
-				punctuationsAnalyzer.CalculateWordsCountsBetweenPunctuationStandardDeviation(lexer.GetTokens(sentence).ToList());
+			var result = punctuationsAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(lexer.GetTokens(sentence).ToList());
 
 			Assert.Equal(expectedResult, result);
 		}
@@ -182,6 +173,33 @@ namespace CrawlerTests
 			var result = punctuationsAnalyzer.CalculateWordsCountDecile(9, lexer.GetTokens(sentence).ToList());
 
 			Assert.Equal(3, result);
+		}
+
+		[Fact]
+		public void CountCharacter_ShouldReturnZero_WhenEmptyList()
+		{
+			var result = punctuationsAnalyzer.CountCharacter('-', new List<Token>());
+
+			Assert.Equal(0, result);
+		}
+
+		[Fact]
+		public void CountCharacter_ShouldReturnOne_WhenOneChar()
+		{
+			var result = punctuationsAnalyzer.CountCharacter('-', new List<Token>{new Token(eTokenType.Punctuation, "-")});
+
+			Assert.Equal(1, result);
+		}
+
+		[Theory]
+		[InlineData(2, '-', "esfesf - sefsef sef-s sf")]
+		[InlineData(4, '?', "esfesf ???? sefsef sefs sf")]
+		[InlineData(7, '!', "e?sfesf! - !!!sefsef! sef!!--s sf?")]
+		public void CountCharacter_ShouldReturnCharacterCount_WhenMoreThanOne(int expectedResult, char chr, string sentence)
+		{
+			var result = punctuationsAnalyzer.CountCharacter(chr, lexer.GetTokens(sentence).ToList());
+
+			Assert.Equal(expectedResult, result);
 		}
 	}
 }

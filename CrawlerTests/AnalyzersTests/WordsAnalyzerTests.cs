@@ -4,7 +4,9 @@ using Crawler.LexicalAnalyzer;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using Crawler.Configs;
 using Crawler.DeJargonizer;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace CrawlerTests
@@ -15,7 +17,19 @@ namespace CrawlerTests
 
 		public WordsAnalyzerTests()
 		{
-			wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>());
+			var dataFilesConfigOptions = Mock.Of<IOptions<DataFilesConfig>>();
+			var dataFilesConfig = new DataFilesConfig
+			{
+				EmotionsFile = "data/Emotion.csv",
+				NumbersFile = "data/Numbers.csv",
+				QuestionsFile = "data/Questions.csv"
+			};
+
+			Mock.Get(dataFilesConfigOptions)
+				.Setup(options => options.Value)
+				.Returns(dataFilesConfig);
+
+			wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>(), dataFilesConfigOptions);
 		}
 
 		[Fact]
@@ -70,6 +84,42 @@ namespace CrawlerTests
 		{
 			var result = wordsAnalyzer.CalculateWordsLengthStandardDeviation(words.Select(w => new Token(eTokenType.StringValue, w)));
 
+			Assert.Equal(expectedResult, result);
+		}
+
+		[Theory]
+		[InlineData(1, "111", "c5c")]
+		[InlineData(2, "15", "33", "erf", "h8")]
+		public void CalculateNumbersAsDigits_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
+		{
+			var result = wordsAnalyzer.CalculateNumbersAsDigits(words.Select(w => new Token(eTokenType.Number, w)));
+			Assert.Equal(expectedResult, result);
+		}
+
+		[Theory]
+		[InlineData(2, "one", "three")]
+		[InlineData(1, "four", "e1ee", "a3i", "nnn")]
+		public void CalculateNumbersAsWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
+		{
+			var result = wordsAnalyzer.CalculateNumbersAsWords(words.Select(w => new Token(eTokenType.StringValue, w)));
+			Assert.Equal(expectedResult, result);
+		}
+
+		[Theory]
+		[InlineData(1, "why", "to")]
+		[InlineData(3, "where", "what", "whom", "hjh")]
+		public void CalculateQuestionWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
+		{
+			var result = wordsAnalyzer.CalculateQuestionWords(words.Select(w => new Token(eTokenType.StringValue, w)));
+			Assert.Equal(expectedResult, result);
+		}
+
+		[Theory]
+		[InlineData(0.5, "Unbelievable", "cse")]
+		[InlineData(0.25, "Censored", "asd", "ss", "hh")]
+		public void CalculateEmotionWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
+		{
+			var result = (double)wordsAnalyzer.CalculatePercentageEmotionWords(words.Select(w => new Token(eTokenType.StringValue, w)));
 			Assert.Equal(expectedResult, result);
 		}
 	}

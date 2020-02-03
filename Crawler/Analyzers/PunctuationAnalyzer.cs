@@ -12,68 +12,73 @@ namespace Crawler.Analyzers
 		{
 			if(!tokens.Any()) return 0;
 
-			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
+			var wordsCountBetweenPunctuations = WordsCountBetweenPunctuations(tokens);
 
-			return !wordsCountsBetweenPunctuations.Any() ? 0 : wordsCountsBetweenPunctuations.Average();
-		}
-
-		private List<int> WordsCountsBetweenPunctuations(List<Token> tokens)
-		{
-			var wordsCounts = new List<int>();
-			var currentWordsCount = 0;
-
-			foreach (var token in tokens)
-			{
-				if (token.TokenType == eTokenType.Punctuation)
-				{
-					if (currentWordsCount != 0)
-					{
-						wordsCounts.Add(currentWordsCount);
-					}
-
-					currentWordsCount = 0;
-				}
-				else
-				{
-					currentWordsCount++;
-				}
-			}
-
-			return wordsCounts;
+			return !wordsCountBetweenPunctuations.Any() ? 0 : wordsCountBetweenPunctuations.Average();
 		}
 
 		public double CalculateMaxWordsCountBetweenPunctuation(List<Token> tokens)
 		{
 			if (!tokens.Any()) return 0;
 
-			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
+			var wordsCountBetweenPunctuations = WordsCountBetweenPunctuations(tokens);
 
-			return !wordsCountsBetweenPunctuations.Any() ? 0 : wordsCountsBetweenPunctuations.Max();
+			return !wordsCountBetweenPunctuations.Any() ? 0 : wordsCountBetweenPunctuations.Max();
 		}
 
-		public double CalculateWordsCountsBetweenPunctuationStandardDeviation(List<Token> tokens)
+		public double CalculateWordsCountBetweenPunctuationStandardDeviation(List<Token> tokens)
 		{
-			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
+			var wordsCountBetweenPunctuations = WordsCountBetweenPunctuations(tokens);
 
-			if (wordsCountsBetweenPunctuations.Count < 2) throw new StandardDeviationInvalidArgumentsAmountException();
+			if (wordsCountBetweenPunctuations.Count < 2) throw new StandardDeviationInvalidArgumentsAmountException();
 
 			var average = CalculateAverageWordsCountBetweenPunctuation(tokens);
-			var sumOfSquaresOfDifferences = wordsCountsBetweenPunctuations.Select(val => Math.Pow(val - average, 2)).Sum();
+			var sumOfSquaresOfDifferences = wordsCountBetweenPunctuations.Select(val => Math.Pow(val - average, 2)).Sum();
 
-			return Math.Sqrt(sumOfSquaresOfDifferences / (wordsCountsBetweenPunctuations.Count - 1));
+			return Math.Sqrt(sumOfSquaresOfDifferences / (wordsCountBetweenPunctuations.Count - 1));
 		}
 
 		public int CalculateWordsCountDecile(int decile, List<Token> tokens)
 		{
-			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
+			var wordsCountBetweenPunctuations = WordsCountBetweenPunctuations(tokens);
 
-			if (wordsCountsBetweenPunctuations.Count < 10) throw new DecileInvalidArgumentsAmountException();
+			if (wordsCountBetweenPunctuations.Count < 10) throw new DecileInvalidArgumentsAmountException();
 
-			wordsCountsBetweenPunctuations.Sort();
+			wordsCountBetweenPunctuations.Sort();
 
-			var decileIndex = (int)Math.Ceiling((decile * (wordsCountsBetweenPunctuations.Count + 1)) / (double)10);
+			var decileIndex = (int)Math.Ceiling((decile * (wordsCountBetweenPunctuations.Count + 1)) / 10.0);
 
-			return wordsCountsBetweenPunctuations[decileIndex - 1];
+			return wordsCountBetweenPunctuations[decileIndex - 1];
+		}
+
+		public int CountCharacter(char chr, List<Token> tokens)
+		{
+			return tokens.Count(t => t.TokenType == eTokenType.Punctuation && t.Value[0] == chr);
+		}
+
+		private List<int> WordsCountBetweenPunctuations(List<Token> tokens)
+		{
+			var wordsCount = new List<int>();
+			var currentWordsCount = 0;
+
+			foreach (var token in tokens)
+			{
+				if (token.TokenType == eTokenType.Punctuation && (token.Value == "." || token.Value == ","))
+				{
+					if (currentWordsCount != 0)
+					{
+						wordsCount.Add(currentWordsCount);
+					}
+
+					currentWordsCount = 0;
+				}
+				else if (token.TokenType == eTokenType.StringValue)
+				{
+					currentWordsCount++;
+				}
+			}
+
+			return wordsCount;
 		}
 	}
 }

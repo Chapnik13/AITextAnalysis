@@ -74,9 +74,15 @@ namespace Crawler
 
             Console.WriteLine($"average words count between punctuation: {punctuationAnalyzer.CalculateAverageWordsCountBetweenPunctuation(allTokens)}");
             Console.WriteLine($"max words count between punctuation: {punctuationAnalyzer.CalculateMaxWordsCountBetweenPunctuation(allTokens)}");
-            Console.WriteLine($"standard deviation of words count between punctuation: {punctuationAnalyzer.CalculateWordsCountsBetweenPunctuationStandardDeviation(allTokens)}");
+            Console.WriteLine($"standard deviation of words count between punctuation: {punctuationAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(allTokens)}");
             Console.WriteLine($"ninth decile words count between punctuation: {punctuationAnalyzer.CalculateWordsCountDecile(9, allTokens)}");
             Console.WriteLine($"second decile words count between punctuation: {punctuationAnalyzer.CalculateWordsCountDecile(2, allTokens)}");
+
+            Console.WriteLine($"count question marks: {Normalize(punctuationAnalyzer.CountCharacter('?', allTokens), wordsCount)}");
+            Console.WriteLine($"count exclamation marks: {Normalize(punctuationAnalyzer.CountCharacter('!', allTokens), wordsCount)}");
+            Console.WriteLine($"count colons: {Normalize(punctuationAnalyzer.CountCharacter(':', allTokens), wordsCount)}");
+            Console.WriteLine($"count dashes: {Normalize(punctuationAnalyzer.CountCharacter('-', allTokens), wordsCount)}");
+            Console.WriteLine($"count quotations mark: {Normalize(punctuationAnalyzer.CountCharacter('"', allTokens)/2 , wordsCount)}");
 
 			applicationLifetime.StopApplication();
         }
