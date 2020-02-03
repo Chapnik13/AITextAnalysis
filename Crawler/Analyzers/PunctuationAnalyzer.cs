@@ -6,9 +6,9 @@ using Crawler.Exceptions;
 
 namespace Crawler.Analyzers
 {
-	public class PunctuationsAnalyzer
+	public class PunctuationAnalyzer : IPunctuationAnalyzer
 	{
-		public double CalculateAverageWordsCountBetweenPunctuations(List<Token> tokens)
+		public double CalculateAverageWordsCountBetweenPunctuation(List<Token> tokens)
 		{
 			if(!tokens.Any()) return 0;
 
@@ -42,25 +42,38 @@ namespace Crawler.Analyzers
 			return wordsCounts;
 		}
 
-		public double CalculateMaxWordsCountBetweenPunctuations(List<Token> list)
+		public double CalculateMaxWordsCountBetweenPunctuation(List<Token> tokens)
 		{
-			if (!list.Any()) return 0;
+			if (!tokens.Any()) return 0;
 
-			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(list);
+			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
 
 			return !wordsCountsBetweenPunctuations.Any() ? 0 : wordsCountsBetweenPunctuations.Max();
 		}
 
-		public double CalculateWordsCountsBetweenPunctuationsStandardDeviation(List<Token> tokens)
+		public double CalculateWordsCountsBetweenPunctuationStandardDeviation(List<Token> tokens)
 		{
 			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
 
 			if (wordsCountsBetweenPunctuations.Count < 2) throw new StandardDeviationInvalidArgumentsAmountException();
 
-			var average = CalculateAverageWordsCountBetweenPunctuations(tokens);
+			var average = CalculateAverageWordsCountBetweenPunctuation(tokens);
 			var sumOfSquaresOfDifferences = wordsCountsBetweenPunctuations.Select(val => Math.Pow(val - average, 2)).Sum();
 
 			return Math.Sqrt(sumOfSquaresOfDifferences / (wordsCountsBetweenPunctuations.Count - 1));
+		}
+
+		public int CalculateWordsCountDecile(int decile, List<Token> tokens)
+		{
+			var wordsCountsBetweenPunctuations = WordsCountsBetweenPunctuations(tokens);
+
+			if (wordsCountsBetweenPunctuations.Count < 10) throw new DecileInvalidArgumentsAmountException();
+
+			wordsCountsBetweenPunctuations.Sort();
+
+			var decileIndex = (int)Math.Ceiling((decile * (wordsCountsBetweenPunctuations.Count + 1)) / (double)10);
+
+			return wordsCountsBetweenPunctuations[decileIndex - 1];
 		}
 	}
 }

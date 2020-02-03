@@ -11,9 +11,9 @@ namespace Crawler.Analyzers
 {
 	public class WordsAnalyzer : IWordsAnalyzer
 	{
-        private const string EMOTIOMS_FILE = "Emotion.csv";
-        private const string NUMBERS_FILE = "Numbers.csv";
-        private const string QUESTIONS_FILE = "Questions.csv";
+        private const string EMOTIOMS_FILE = "data/Emotion.csv";
+        private const string NUMBERS_FILE = "data/Numbers.csv";
+        private const string QUESTIONS_FILE = "data/Questions.csv";
 
         private IDeJargonizer deJargonizer;
 
@@ -24,14 +24,14 @@ namespace Crawler.Analyzers
 
 		public float CalculateAverageLength(IEnumerable<Token> tokens)
 		{
-			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+			var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
 
 			return words.Any() ? (float)words.Average(w => w.Length) : 0;
 		}
 
 		public double CalculateWordsLengthStandardDeviation(IEnumerable<Token> tokens)
 		{
-			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+			var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
 
 			if (words.Count() < 2) throw new StandardDeviationInvalidArgumentsAmountException();
 
@@ -43,7 +43,7 @@ namespace Crawler.Analyzers
 
 		public DeJargonizerResult CalculateDeJargonizer(IEnumerable<Token> tokens)
 		{
-			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+			var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
 
 			return deJargonizer.Analyze(words);
 		}
@@ -55,7 +55,7 @@ namespace Crawler.Analyzers
         /// <returns></returns>
         public int CalculateNumbersAsDigits(IEnumerable<Token> tokens)
         {
-            var words = tokens.GetValuesByTokenType(eTokenType.Number);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.Number);
             return words.Count(w => w.All(l => char.IsDigit(l)));
             
         }
@@ -68,7 +68,7 @@ namespace Crawler.Analyzers
         public int CalculateNumbersAsWords(IEnumerable<Token> tokens)
         {
             
-            var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
             var DigitStrings = ExtractWordsFromFile(NUMBERS_FILE);
             return words.Count(w=>DigitStrings.Contains(w.ToLower()));
         }
@@ -80,14 +80,14 @@ namespace Crawler.Analyzers
         /// <returns></returns>
         public double CalculatePercentageEmotionWords(IEnumerable<Token> tokens)
         {
-            var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
             var EmotionStrings = ExtractWordsFromFile(EMOTIOMS_FILE);
             return (double)((double)(words.Count(w=>EmotionStrings.Contains(w.ToLower()))) / (double)words.Count()) ; 
         }
 
         public int CalculateQuestionWords(IEnumerable<Token> tokens)
         {
-            var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
             var QuestionStrings = ExtractWordsFromFile(QUESTIONS_FILE);
             return words.Count(w=>QuestionStrings.Contains(w.ToLower()));  
         }

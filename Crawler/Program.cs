@@ -48,7 +48,8 @@ namespace Crawler
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
                 .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
-                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>();
+                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>()
+                .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>();
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)
