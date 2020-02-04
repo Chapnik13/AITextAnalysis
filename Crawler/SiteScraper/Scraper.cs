@@ -41,10 +41,10 @@ namespace Crawler.SiteScraper
             {
                 Title = document.QuerySelectorAll(selector.TitleSelector).Select(n => n.Text()).First(),
                 Subtitle = document.QuerySelectorAll(selector.SubtitleSelector).Select(n => n.Text()).First(),
-                Paragraphs = document.QuerySelectorAll(selector.TextSelector).Select(n => n.Text()).ToList()
+                Content = document.QuerySelectorAll(selector.TextSelector).Select(n => n.Text()).ToList()
             };
 
-            if (article.Title is null || article.Subtitle is null || !article.Paragraphs.Any())
+            if (article.Title is null || article.Subtitle is null || !article.Content.Any())
             {
                 logger.LogError("Could not find {@selector} in {address}", selector, address);
 

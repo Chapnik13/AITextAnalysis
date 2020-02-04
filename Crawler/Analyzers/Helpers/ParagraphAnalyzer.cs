@@ -2,9 +2,9 @@
 using Crawler.LexicalAnalyzer;
 using System.Collections.Generic;
 
-namespace Crawler.Analyzers
+namespace Crawler.Analyzers.Helpers
 {
-    public class ParagraphAnalyzer : IParagraphAnalyzer
+    public class ParagraphAnalyzer
     {
         public float CalculateAverageLength(IEnumerable<IEnumerable<Token>> paragraphs)
         {

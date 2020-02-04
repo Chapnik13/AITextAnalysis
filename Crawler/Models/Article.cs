@@ -6,6 +6,6 @@ namespace Crawler.Models
     {
         public T Title { get; set; }
         public T Subtitle { get; set; }
-        public List<T> Paragraphs { get; set; }
+        public List<T> Content { get; set; }
     }
 }

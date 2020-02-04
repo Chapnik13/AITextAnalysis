@@ -47,10 +47,10 @@ namespace Crawler
             {
                 Title = lexer.GetTokens(article.Title).ToList(),
                 Subtitle = lexer.GetTokens(article.Subtitle).ToList(),
-                Paragraphs = article.Paragraphs.Select(paragraph => lexer.GetTokens(paragraph).ToList()).ToList()
+                Content = article.Content.Select(paragraph => lexer.GetTokens(paragraph).ToList()).ToList()
             };
 
-            var allTokens = tokenizedArticle.Paragraphs.SelectMany(t => t).ToList();
+            var allTokens = tokenizedArticle.Content.SelectMany(t => t).ToList();
 
             var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(allTokens);
 
@@ -60,9 +60,9 @@ namespace Crawler
             Console.WriteLine($"deJargonizer score: {deJargonizerResult.Score}");
             Console.WriteLine($"deJargonizer rare words percentage: {deJargonizerResult.RareWordsPercentage}");
 
-            Console.WriteLine($"average paragraph length: {paragraphAnalyzer.CalculateAverageLength(tokenizedArticle.Paragraphs)}");
-            Console.WriteLine($"average amount of commans and periods in a paragraph: {paragraphAnalyzer.CalculateAverageAmountOfCommaAndPeriod(tokenizedArticle.Paragraphs)}");
-            Console.WriteLine($"average amount of sentences in a paragraph: {paragraphAnalyzer.CalculateAverageAmountOfSentences(tokenizedArticle.Paragraphs)}");
+            Console.WriteLine($"average paragraph length: {paragraphAnalyzer.CalculateAverageLength(tokenizedArticle.Content)}");
+            Console.WriteLine($"average amount of commans and periods in a paragraph: {paragraphAnalyzer.CalculateAverageAmountOfCommaAndPeriod(tokenizedArticle.Content)}");
+            Console.WriteLine($"average amount of sentences in a paragraph: {paragraphAnalyzer.CalculateAverageAmountOfSentences(tokenizedArticle.Content)}");
             Console.WriteLine("================ Text ================");
             Console.WriteLine("================ Title ================");
             Console.WriteLine($"Amount of words: {tokenizedArticle.Title.Count(t => t.TokenType == eTokenType.StringValue || t.TokenType == eTokenType.Number)}");
