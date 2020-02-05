@@ -1,6 +1,7 @@
 ﻿using Crawler.Analyzers.AnalysisResults;
 using Crawler.Analyzers.Helpers;
 using Crawler.DeJargonizer;
+using Crawler.ExtensionMethods;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using System;
@@ -21,20 +22,36 @@ namespace Crawler.Analyzers
 
         public ContentAnalysisResult Analyze(Article<List<Token>> article)
         {
-            var result = new ContentAnalysisResult();
             var content = article.Content;
-
             var wordsAnalyzer = new WordsAnalyzer(deJargonizer, content.SelectMany(t => t).ToList());
-            var paragraphsAnalyzer = new ParagraphAnalyzer(content);
 
-            result.AmountOfNumbersAsWords = wordsAnalyzer.CalculateNumbersAsWords();
-            result.AmountOfNumbersAsDigits = wordsAnalyzer.CalculateNumbersAsDigits();
-            result.AmountOfQuestionWords = wordsAnalyzer.CalculateQuestionWords();
-            result.PercentageOfEmotionWords = wordsAnalyzer.CalculatePercentageEmotionWords();
-            result.WordLengthStandartDeviation = wordsAnalyzer.CalculateStandardDeviation();
-            result.DeJargonizerResult = wordsAnalyzer.CalculateDeJargonizer();
+            return new ContentAnalysisResult
+            {
+                AmountOfNumbersAsWords = wordsAnalyzer.CalculateNumbersAsWords(),
+                AmountOfNumbersAsDigits = wordsAnalyzer.CalculateNumbersAsDigits(),
+                AmountOfQuestionWords = wordsAnalyzer.CalculateQuestionWords(),
+                PercentageOfEmotionWords = wordsAnalyzer.CalculatePercentageEmotionWords() * 100,
+                WordLengthStandartDeviation = wordsAnalyzer.CalculateStandardDeviation(),
+                DeJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(),
+                AverageLengthOfParagraph = CalculateAverageParagraphLength(content),
+                AverageAmountOfSentencesInParagraph = CalculateAverageAmountOfSentencesInParagraph(content),
+                AverageAmountOfCommasAndPeriodsInParagraph = CalculateAverageAmountOfCommasAndPeriodsInParagraph(content)
+            };
+        }
 
-            return result;
+        private float CalculateAverageParagraphLength(List<List<Token>> paragraphs)
+        {
+            return paragraphs.CalculateAverageOfTokenGroups(t => t.TokenType != eTokenType.Punctuation);
+        }
+
+        private float CalculateAverageAmountOfCommasAndPeriodsInParagraph(List<List<Token>> paragraphs)
+        {
+            return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == "." || t.Value == ",");
+        }
+
+        private float CalculateAverageAmountOfSentencesInParagraph(List<List<Token>> paragraphs)
+        {
+            return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == ".");
         }
     }
 }

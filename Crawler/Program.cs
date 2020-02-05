@@ -47,9 +47,7 @@ namespace Crawler
                 .AddTransient<IScraper, Scraper>()
                 .AddTransient<ILexer, Lexer>()
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
-                .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
-                .AddTransient<IAnalyzer<TitleAnalysisResult>, TitleAnalyzer>()
-                .AddTransient<IAnalyzer<SubtitleAnalysisResult>, SubtitleAnalyzer>();
+                .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>();
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)

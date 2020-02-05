@@ -4,7 +4,6 @@ using Crawler.MockupWrappers;
 using Crawler.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
