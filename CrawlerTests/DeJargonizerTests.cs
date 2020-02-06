@@ -10,7 +10,7 @@ namespace CrawlerTests
 	public class DeJargonizerTests
 	{
 		private readonly IWordsCountLoader wordsCountLoader;
-		private readonly DeJargonizer deJargonizer;
+		private readonly DeJargonizeAnalyzer deJargonizer;
 
 		public DeJargonizerTests()
 		{
@@ -36,7 +36,7 @@ namespace CrawlerTests
 				.Setup(w => w.Value)
 				.Returns(new WordsCountThresholdsConfig {CommonWordsThreshold = 1000, NormalWordsThreshold = 50});
 
-			deJargonizer = new DeJargonizer(wordsCountLoader,wordsCountThresholdsConfigOptions
+			deJargonizer = new DeJargonizeAnalyzer(wordsCountLoader,wordsCountThresholdsConfigOptions
 			);
 		}
 

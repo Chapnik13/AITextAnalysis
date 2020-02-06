@@ -4,10 +4,8 @@ using Crawler.DeJargonizer;
 using Crawler.ExtensionMethods;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Crawler.Analyzers
 {
@@ -24,6 +22,7 @@ namespace Crawler.Analyzers
         {
             var content = article.Content;
             var wordsAnalyzer = new WordsAnalyzer(deJargonizer, content.SelectMany(t => t).ToList());
+            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer();
 
             return new ContentAnalysisResult
             {
@@ -32,7 +31,8 @@ namespace Crawler.Analyzers
                 AmountOfQuestionWords = wordsAnalyzer.CalculateQuestionWords(),
                 PercentageOfEmotionWords = wordsAnalyzer.CalculatePercentageEmotionWords() * 100,
                 WordLengthStandartDeviation = wordsAnalyzer.CalculateStandardDeviation(),
-                DeJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(),
+                DeJargonizerScore = deJargonizerResult.Score,
+                AmountOfRareWords = deJargonizerResult.RareWords.Count(),
                 AverageLengthOfParagraph = CalculateAverageParagraphLength(content),
                 AverageAmountOfSentencesInParagraph = CalculateAverageAmountOfSentencesInParagraph(content),
                 AverageAmountOfCommasAndPeriodsInParagraph = CalculateAverageAmountOfCommasAndPeriodsInParagraph(content)

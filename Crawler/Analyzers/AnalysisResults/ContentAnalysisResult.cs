@@ -1,11 +1,12 @@
-﻿using Crawler.DeJargonizer;
-
-namespace Crawler.Analyzers.AnalysisResults
+﻿namespace Crawler.Analyzers.AnalysisResults
 {
     [AnalysisResult("Content")]
     public class ContentAnalysisResult
     {
-        public DeJargonizerResult DeJargonizerResult { get; set; }
+        [Result("Amount of rare words: {0}")]
+        public int AmountOfRareWords { get; set; }
+        [Result("DeJargonizer score: {0}")]
+        public int DeJargonizerScore { get; set; }
         [Result("Word length standart deviation: {0:0.00} words")]
         public double WordLengthStandartDeviation { get; set; }
         [Result("Percentage of emotions words: {0:0.00}%")]

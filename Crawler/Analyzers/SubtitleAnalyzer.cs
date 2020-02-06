@@ -4,6 +4,7 @@ using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Crawler.Analyzers
 {
@@ -18,15 +19,15 @@ namespace Crawler.Analyzers
 
         public SubtitleAnalysisResult Analyze(Article<List<Token>> article)
         {
-            var result = new SubtitleAnalysisResult();
-            var subtitle = article.Subtitle;
 
+            var subtitle = article.Subtitle;
             var wordsAnalyzer = new WordsAnalyzer(deJargonizer, subtitle);
 
-            result.AmountOfWords = wordsAnalyzer.CountWords();
-            result.DeJargonizerResult = wordsAnalyzer.CalculateDeJargonizer();
-
-            return result;
+            return new SubtitleAnalysisResult
+            {
+                AmountOfWords = wordsAnalyzer.CountWords(),
+                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer().RareWords.Count()
+            };
         }
     }
 }
