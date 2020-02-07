@@ -1,11 +1,11 @@
 using Crawler.Configs;
 using Crawler.MockupWrappers;
+using Crawler.Models;
 using Crawler.SiteScraper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,6 +16,7 @@ namespace CrawlerTests
     {
         private const string A_TEXT = "Hello";
         private const string PATTERN = "sciencedaily";
+        private const string CONTENT_SELECTOR = "div#text";
 
         private readonly INodeWrapper node;
         private readonly List<INodeWrapper> nodes;
@@ -28,10 +29,13 @@ namespace CrawlerTests
             var document = Mock.Of<IDocumentWrapper>();
             var configOptions = Mock.Of<IOptions<ScrapersConfig>>();
 
-            config = new ScrapersConfig { ScrapesrDefinitions = new[]
+            config = new ScrapersConfig
             {
-                new ScraperDefinition{UrlPattern = PATTERN, Selector = "div#text"}
-            } };
+                ScrapersDefinitions = new[]
+                {
+                    new ScraperDefinition{UrlPattern = PATTERN, ContentSelector = CONTENT_SELECTOR}
+                }
+            };
 
             Mock.Get(configOptions).Setup(c => c.Value).Returns(config);
 
@@ -56,17 +60,17 @@ namespace CrawlerTests
 
             var result = await RunScrapAsync().ConfigureAwait(false);
 
-            Assert.Contains(result, s => s == A_TEXT);
+            Assert.Contains(result.Content, s => s == A_TEXT);
         }
 
         [Fact]
-        public async Task ScrapAsync_ShouldReturnEmptyText_WhenSelectorNotFound()
+        public async Task ScrapAsync_ShouldReturnNull_WhenSelectorNotFound()
         {
             nodes.Clear();
 
             var result = await RunScrapAsync().ConfigureAwait(false);
 
-            Assert.Empty(result);
+            Assert.Null(result);
         }
 
         [Theory]
@@ -80,7 +84,7 @@ namespace CrawlerTests
 
             var result = await RunScrapAsync().ConfigureAwait(false);
 
-            Assert.Contains(result, string.IsNullOrWhiteSpace);
+            Assert.Contains(result.Content, string.IsNullOrWhiteSpace);
         }
 
         [Fact]
@@ -90,15 +94,17 @@ namespace CrawlerTests
             Mock.Get(node)
                 .SetupSequence(n => n.Text())
                 .Returns(A_TEXT)
+                .Returns(A_TEXT)
+                .Returns(A_TEXT)
                 .Returns(A_TEXT);
 
             var result = await RunScrapAsync().ConfigureAwait(false);
 
-            Assert.Collection(result, item => Assert.Contains(A_TEXT, item),
+            Assert.Collection(result.Content, item => Assert.Contains(A_TEXT, item),
                                                         item => Assert.Contains(A_TEXT, item));
         }
 
-        private async Task<IEnumerable<string>> RunScrapAsync() =>
+        private async Task<Article<string>> RunScrapAsync() =>
             await scraper.ScrapAsync(PATTERN, It.IsAny<CancellationToken>()).ConfigureAwait(false);
     }
 }

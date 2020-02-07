@@ -9,7 +9,7 @@ namespace Crawler.SiteScraper
 
         public string TitleSelector { get; set; }
         public string SubtitleSelector { get; set; }
-        public string TextSelector { get; set; }
+        public string ContentSelector { get; set; }
 
         public string UrlPattern
         {

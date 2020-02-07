@@ -16,9 +16,9 @@ namespace Crawler.Analyzers.Helpers
         private const string QUESTIONS_FILE = "Questions.csv";
 
         private readonly IDeJargonizer deJargonizer;
-        private readonly List<Token> tokens;
+        private readonly IEnumerable<Token> tokens;
 
-        public WordsAnalyzer(IDeJargonizer deJargonizer, List<Token> tokens)
+        public WordsAnalyzer(IDeJargonizer deJargonizer, IEnumerable<Token> tokens)
         {
             this.deJargonizer = deJargonizer;
             this.tokens = tokens;

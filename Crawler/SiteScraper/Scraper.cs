@@ -38,9 +38,9 @@ namespace Crawler.SiteScraper
 
             var article = new Article<string>
             {
-                Title = document.QuerySelectorAll(selector.TitleSelector).Select(n => n.Text()).First(),
-                Subtitle = document.QuerySelectorAll(selector.SubtitleSelector).Select(n => n.Text()).First(),
-                Content = document.QuerySelectorAll(selector.TextSelector).Select(n => n.Text()).ToList()
+                Title = document.QuerySelectorAll(selector.TitleSelector).Select(n => n.Text()).FirstOrDefault(),
+                Subtitle = document.QuerySelectorAll(selector.SubtitleSelector).Select(n => n.Text()).FirstOrDefault(),
+                Content = document.QuerySelectorAll(selector.ContentSelector).Select(n => n.Text()).ToList()
             };
 
             if (article.Title is null || article.Subtitle is null || !article.Content.Any())
@@ -57,7 +57,7 @@ namespace Crawler.SiteScraper
 
         private ScraperDefinition FindSelector(string url)
         {
-            return config.ScrapesrDefinitions
+            return config.ScrapersDefinitions
                 .FirstOrDefault(scraperDefinition => scraperDefinition.Match(url));
         }
     }
