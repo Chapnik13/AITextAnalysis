@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Crawler.Configs;
 using Crawler.LexicalAnalyzer;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Linq;
-using Crawler.Configs;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace CrawlerTests
 {
-    public class LexerTests
+	public class LexerTests
     {
         private readonly ILexer lexer;
         private readonly LexerConfig config;

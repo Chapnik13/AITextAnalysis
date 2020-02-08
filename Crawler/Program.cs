@@ -35,7 +35,7 @@ namespace Crawler
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
             services.AddOptions()
-                .Configure<WordsCountMatrixConfig>(context.Configuration.GetSection("WordsCountMatrix"))
+                .Configure<DataFilesConfig>(context.Configuration.GetSection("DataFiles"))
                 .Configure<WordsCountThresholdsConfig>(context.Configuration.GetSection("WordsCountThresholds"))
                 .Configure<LexerConfig>(context.Configuration.GetSection("Lexer"))
                 .Configure<ScrapersConfig>(context.Configuration.GetSection("Scrapers"));
@@ -48,7 +48,8 @@ namespace Crawler
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
                 .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
-                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>();
+                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>()
+                .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>();
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)

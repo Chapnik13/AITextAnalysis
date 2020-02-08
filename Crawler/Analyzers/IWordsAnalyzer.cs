@@ -8,16 +8,16 @@ namespace Crawler.Analyzers
 	{
 		float CalculateAverageLength(IEnumerable<Token> tokens);
 
-		double CalculateStandardDeviation(IEnumerable<Token> tokens);
+		double CalculateWordsLengthStandardDeviation(IEnumerable<Token> tokens);
 
 		DeJargonizerResult CalculateDeJargonizer(IEnumerable<Token> tokens);
 
-        public int CalculateNumbersAsDigits(IEnumerable<Token> tokens);
+		int CalculateNumbersAsDigits(IEnumerable<Token> tokens);
 
-        public int CalculateNumbersAsWords(IEnumerable<Token> tokens);
+		int CalculateNumbersAsWords(IEnumerable<Token> tokens);
 
-        public double CalculatePercentageEmotionWords(IEnumerable<Token> tokens);
+		double CalculatePercentageEmotionWords(IEnumerable<Token> tokens);
 
-        public int CalculateQuestionWords(IEnumerable<Token> tokens);
-    }
+		int CalculateQuestionWords(IEnumerable<Token> tokens);
+	}
 }

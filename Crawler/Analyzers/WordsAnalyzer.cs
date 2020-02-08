@@ -1,49 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Crawler.Configs;
 using Crawler.DeJargonizer;
 using Crawler.Exceptions;
 using Crawler.ExtensionMethods;
 using Crawler.LexicalAnalyzer;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Crawler.Analyzers
 {
 	public class WordsAnalyzer : IWordsAnalyzer
 	{
-        private const string EMOTIOMS_FILE = "Emotion.csv";
-        private const string NUMBERS_FILE = "Numbers.csv";
-        private const string QUESTIONS_FILE = "Questions.csv";
+        private readonly string emotionsFilePath;
+        private readonly string numbersFilePath;
+        private readonly string questionsFilePath;
 
         private IDeJargonizer deJargonizer;
 
-		public WordsAnalyzer(IDeJargonizer deJargonizer)
+		public WordsAnalyzer(IDeJargonizer deJargonizer, IOptions<DataFilesConfig> dataFilesConfig)
 		{
 			this.deJargonizer = deJargonizer;
+			emotionsFilePath = dataFilesConfig.Value.EmotionsFile;
+			numbersFilePath = dataFilesConfig.Value.NumbersFile;
+			questionsFilePath = dataFilesConfig.Value.QuestionsFile;
 		}
 
 		public float CalculateAverageLength(IEnumerable<Token> tokens)
 		{
-			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+			var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
 
 			return words.Any() ? (float)words.Average(w => w.Length) : 0;
 		}
 
-		public double CalculateStandardDeviation(IEnumerable<Token> tokens)
+		public double CalculateWordsLengthStandardDeviation(IEnumerable<Token> tokens)
 		{
-			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+			var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
 
 			if (words.Count() < 2) throw new StandardDeviationInvalidArgumentsAmountException();
 
 			var average = CalculateAverageLength(tokens);
-			var sumOfSquaresOfDifferences = words.Select(val => (val.Length - average) * (val.Length - average)).Sum();
+			var sumOfSquaresOfDifferences = words.Select(val => Math.Pow(val.Length - average, 2)).Sum();
 
 			return Math.Sqrt(sumOfSquaresOfDifferences / (words.Count() - 1));
 		}
 
 		public DeJargonizerResult CalculateDeJargonizer(IEnumerable<Token> tokens)
 		{
-			var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
+			var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
 
 			return deJargonizer.Analyze(words);
 		}
@@ -55,7 +60,7 @@ namespace Crawler.Analyzers
         /// <returns></returns>
         public int CalculateNumbersAsDigits(IEnumerable<Token> tokens)
         {
-            var words = tokens.GetValuesByTokenType(eTokenType.Number);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.Number);
             return words.Count(w => w.All(l => char.IsDigit(l)));
             
         }
@@ -68,8 +73,8 @@ namespace Crawler.Analyzers
         public int CalculateNumbersAsWords(IEnumerable<Token> tokens)
         {
             
-            var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
-            var DigitStrings = ExtractWordsFromFile(NUMBERS_FILE);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
+            var DigitStrings = ExtractWordsFromFile(numbersFilePath);
             return words.Count(w=>DigitStrings.Contains(w.ToLower()));
         }
 
@@ -80,15 +85,15 @@ namespace Crawler.Analyzers
         /// <returns></returns>
         public double CalculatePercentageEmotionWords(IEnumerable<Token> tokens)
         {
-            var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
-            var EmotionStrings = ExtractWordsFromFile(EMOTIOMS_FILE);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
+            var EmotionStrings = ExtractWordsFromFile(emotionsFilePath);
             return (double)((double)(words.Count(w=>EmotionStrings.Contains(w.ToLower()))) / (double)words.Count()) ; 
         }
 
         public int CalculateQuestionWords(IEnumerable<Token> tokens)
         {
-            var words = tokens.GetValuesByTokenType(eTokenType.StringValue);
-            var QuestionStrings = ExtractWordsFromFile(QUESTIONS_FILE);
+            var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
+            var QuestionStrings = ExtractWordsFromFile(questionsFilePath);
             return words.Count(w=>QuestionStrings.Contains(w.ToLower()));  
         }
 
