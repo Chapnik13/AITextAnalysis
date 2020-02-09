@@ -30,13 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Emotion.csv">
+    <None Update="Data\Emotion.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Numbers.csv">
+    <None Update="Data\Numbers.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Questions.csv">
+    <None Update="Data\Questions.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

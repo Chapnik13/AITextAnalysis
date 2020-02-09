@@ -5,6 +5,9 @@ using Crawler.LexicalAnalyzer;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using Crawler.Configs;
+using Crawler.DeJargonizer;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace CrawlerTests
@@ -13,10 +16,22 @@ namespace CrawlerTests
     {
         private readonly IDeJargonizer deJargonizer;
 
-        public WordsAnalyzerTests()
-        {
-            deJargonizer = Mock.Of<IDeJargonizer>();
-        }
+		public WordsAnalyzerTests()
+		{
+			var dataFilesConfigOptions = Mock.Of<IOptions<DataFilesConfig>>();
+			var dataFilesConfig = new DataFilesConfig
+			{
+				EmotionsFile = "data/Emotion.csv",
+				NumbersFile = "data/Numbers.csv",
+				QuestionsFile = "data/Questions.csv"
+			};
+
+			Mock.Get(dataFilesConfigOptions)
+				.Setup(options => options.Value)
+				.Returns(dataFilesConfig);
+
+			wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>(), dataFilesConfigOptions);
+		}
 
         [Fact]
         public void CalculateAverageLength_ShouldReturnZero_WhenEmptyList()
@@ -50,7 +65,7 @@ namespace CrawlerTests
         }
 
         [Fact]
-        public void CalculateStandardDeviation_ShouldThrowStandardDeviationInvalidArgumentsAmountException_WhenEmptyList()
+        public void CalculateWordsLengthStandardDeviation_ShouldThrowStandardDeviationInvalidArgumentsAmountException_WhenEmptyList()
         {
             Assert.Throws<StandardDeviationInvalidArgumentsAmountException>(
                 () => new WordsAnalyzer(deJargonizer, new List<Token>()).CalculateStandardDeviation()
@@ -58,7 +73,7 @@ namespace CrawlerTests
         }
 
         [Fact]
-        public void CalculateStandardDeviation_ShouldThrowStandardDeviationInvalidArgumentsAmountException_WhenOneWord()
+        public void CalculateWordsLengthStandardDeviation_ShouldThrowStandardDeviationInvalidArgumentsAmountException_WhenOneWord()
         {
             var tokens = new List<Token> { new Token(eTokenType.StringValue, It.IsAny<string>()) };
 
@@ -70,7 +85,7 @@ namespace CrawlerTests
         [Theory]
         [InlineData(0, "efe", "cse")]
         [InlineData(0.5, "s", "ff", "ss", "hh")]
-        public void CalculateStandardDeviation_ShouldReturnWordsLengthStandardDeviation_WhenMoreThanOneWords(double expectedResult, params string[] words)
+        public void CalculateWordsLengthStandardDeviation_ShouldReturnWordsLengthStandardDeviation_WhenMoreThanOneWords(double expectedResult, params string[] words)
         {
             var tokens = words.Select(w => new Token(eTokenType.StringValue, w));
             var result = new WordsAnalyzer(deJargonizer, tokens).CalculateStandardDeviation();

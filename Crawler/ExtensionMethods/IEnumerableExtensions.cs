@@ -7,9 +7,9 @@ namespace Crawler.ExtensionMethods
 {
     public static class IEnumerableExtensions
     {
-        public static IEnumerable<string> GetValuesByTokenType(this IEnumerable<Token> tokens, eTokenType tokenType)
+        public static IEnumerable<string> GetValuesByTokenTypes(this IEnumerable<Token> tokens, params eTokenType[] tokenTypes)
         {
-            return tokens.Where(t => t.TokenType == tokenType).Select(t => t.Value);
+            return tokens.Where(t => tokenTypes.Contains(t.TokenType)).Select(t => t.Value);
         }
 
         public static float CalculateAverageOfTokenGroups(this IEnumerable<IEnumerable<Token>> tokenGroups, Func<Token, bool> predicate)

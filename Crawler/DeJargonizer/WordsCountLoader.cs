@@ -9,11 +9,11 @@ namespace Crawler.DeJargonizer
 {
 	public class WordsCountLoader : IWordsCountLoader
 	{
-		private string wordsCountMatrixPath;
+		private readonly string wordsCountMatrixPath;
 
-		public WordsCountLoader(IOptions<WordsCountMatrixConfig> wordsCountMatrixConfig)
+		public WordsCountLoader(IOptions<DataFilesConfig> dataFilesConfig)
 		{
-			wordsCountMatrixPath = wordsCountMatrixConfig.Value.Path;
+			wordsCountMatrixPath = dataFilesConfig.Value.WordsCountMatrix;
 		}
 
 		public Dictionary<string, int> Load()

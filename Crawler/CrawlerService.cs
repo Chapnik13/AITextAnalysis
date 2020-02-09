@@ -12,11 +12,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Crawler.ExtensionMethods;
 
 namespace Crawler
 {
     public class CrawlerService : BackgroundService
     {
+	    private const int NORMALIZATION_COMMON_SCALE = 1000;
+
         private readonly IScraper scraper;
         private readonly ILexer lexer;
         private readonly IHostApplicationLifetime applicationLifetime;
@@ -91,5 +94,10 @@ namespace Crawler
             }
         }
 
+
+        public double Normalize(float value, int currentScale)
+        {
+	        return value / currentScale * NORMALIZATION_COMMON_SCALE;
+        }
     }
 }
