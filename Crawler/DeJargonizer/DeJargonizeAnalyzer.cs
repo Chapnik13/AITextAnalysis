@@ -52,7 +52,7 @@ namespace Crawler.DeJargonizer
 
 		private int GetWordCount(string word)
 		{
-			var wordExist = wordsCount.Value.TryGetValue(word, out var count);
+			var wordExist = wordsCount.Value.TryGetValue(word.ToLower(), out var count);
 
 			return wordExist ? count : 0;
 		}

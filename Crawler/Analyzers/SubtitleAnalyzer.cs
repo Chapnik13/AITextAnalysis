@@ -11,10 +11,12 @@ namespace Crawler.Analyzers
     public class SubtitleAnalyzer : IAnalyzer<SubtitleAnalysisResult>
     {
         private readonly IWordsAnalyzer wordsAnalyzer;
+        private readonly IPunctuationAnalyzer punctuationAnalyzer;
 
-        public SubtitleAnalyzer(IWordsAnalyzer wordsAnalyzer)
+        public SubtitleAnalyzer(IWordsAnalyzer wordsAnalyzer, IPunctuationAnalyzer punctuationAnalyzer)
         {
             this.wordsAnalyzer = wordsAnalyzer;
+            this.punctuationAnalyzer = punctuationAnalyzer;
         }
 
         public SubtitleAnalysisResult Analyze(Article<List<Token>> article)
@@ -24,7 +26,12 @@ namespace Crawler.Analyzers
             return new SubtitleAnalysisResult
             {
                 AmountOfWords = wordsAnalyzer.CountWords(subtitle),
-                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer(subtitle).RareWords.Count()
+                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer(subtitle).RareWords.Count(),
+                AmountOfQuestionMarks = punctuationAnalyzer.CountCharacter('?', subtitle),
+                AmountOfExclamationMarks = punctuationAnalyzer.CountCharacter('!', subtitle),
+                AmountOfDashes = punctuationAnalyzer.CountCharacter('-', subtitle),
+                AmountOfColons = punctuationAnalyzer.CountCharacter(':', subtitle),
+                AmountOfQuotationMarks = punctuationAnalyzer.CountCharacter('"', subtitle)
             };
         }
     }

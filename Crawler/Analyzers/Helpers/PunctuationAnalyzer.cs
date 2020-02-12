@@ -17,7 +17,7 @@ namespace Crawler.Analyzers.Helpers
             return !wordsCountBetweenPunctuations.Any() ? 0 : wordsCountBetweenPunctuations.Average();
         }
 
-        public double CalculateMaxWordsCountBetweenPunctuation(List<Token> tokens)
+        public int CalculateMaxWordsCountBetweenPunctuation(List<Token> tokens)
         {
             if (!tokens.Any()) return 0;
 

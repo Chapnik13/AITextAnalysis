@@ -38,7 +38,17 @@ namespace Crawler.Analyzers
                 AmountOfRareWords = deJargonizerResult.RareWords.Count(),
                 AverageLengthOfParagraph = paragraphAnalyzer.CalculateAverageLength(contentAsParagraphs),
                 AverageAmountOfSentencesInParagraph = paragraphAnalyzer.CalculateAverageAmountOfSentences(contentAsParagraphs),
-                AverageAmountOfCommasAndPeriodsInParagraph = paragraphAnalyzer.CalculateAverageAmountOfCommasAndPeriods(contentAsParagraphs)
+                AverageAmountOfCommasAndPeriodsInParagraph = paragraphAnalyzer.CalculateAverageAmountOfCommasAndPeriods(contentAsParagraphs),
+                AverageAmountOfWordsBetweenPunctuation = punctuationAnalyzer.CalculateAverageWordsCountBetweenPunctuation(contentAsText),
+                MaxAmountOfWordsBetweenPunctuation = punctuationAnalyzer.CalculateMaxWordsCountBetweenPunctuation(contentAsText),
+                AmountOfWordsBetweenPunctuationStandardDeviation = punctuationAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(contentAsText),
+                SecondDecileBetweenPunctuation = punctuationAnalyzer.CalculateWordsCountDecile(2, contentAsText),
+                NinthDecileBetweenPunctuation = punctuationAnalyzer.CalculateWordsCountDecile(9, contentAsText),
+                AmountOfQuestionMarks = punctuationAnalyzer.CountCharacter('?', contentAsText),
+                AmountOfExclamationMarks = punctuationAnalyzer.CountCharacter('!', contentAsText),
+                AmountOfDashes = punctuationAnalyzer.CountCharacter('-', contentAsText),
+                AmountOfColons = punctuationAnalyzer.CountCharacter(':', contentAsText),
+                AmountOfQuotationMarks = punctuationAnalyzer.CountCharacter('"', contentAsText)
             };
         }
 

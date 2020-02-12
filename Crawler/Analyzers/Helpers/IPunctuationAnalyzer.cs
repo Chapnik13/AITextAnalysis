@@ -7,7 +7,7 @@ namespace Crawler.Analyzers.Helpers
 	{
 		double CalculateAverageWordsCountBetweenPunctuation(List<Token> tokens);
 
-		double CalculateMaxWordsCountBetweenPunctuation(List<Token> tokens);
+		int CalculateMaxWordsCountBetweenPunctuation(List<Token> tokens);
 
 		double CalculateWordsCountBetweenPunctuationStandardDeviation(List<Token> tokens);
 
