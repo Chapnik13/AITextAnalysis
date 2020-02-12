@@ -1,36 +1,35 @@
 ﻿using Crawler.Analyzers;
 using Crawler.Analyzers.AnalysisResults;
-using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using Crawler.SiteScraper;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Crawler.ExtensionMethods;
 
 namespace Crawler
 {
     public class CrawlerService : BackgroundService
     {
-	    private const int NORMALIZATION_COMMON_SCALE = 1000;
+        private const int NORMALIZATION_COMMON_SCALE = 1000;
 
         private readonly IScraper scraper;
         private readonly ILexer lexer;
         private readonly IHostApplicationLifetime applicationLifetime;
-        private readonly IDeJargonizer deJargonizer;
+        private readonly List<IAnalyzer<AnalysisResult>> analyzers;
 
-        public CrawlerService(IScraper scraper, ILexer lexer, IHostApplicationLifetime applicationLifetime, IDeJargonizer deJargonizer)
+        public CrawlerService(IScraper scraper, ILexer lexer, IHostApplicationLifetime applicationLifetime,
+            IAnalyzer<TitleAnalysisResult> titleAnalyzer, IAnalyzer<SubtitleAnalysisResult> subtitleAnalyzer, IAnalyzer<ContentAnalysisResult> contentAnalyzer)
         {
             this.scraper = scraper;
             this.lexer = lexer;
             this.applicationLifetime = applicationLifetime;
-            this.deJargonizer = deJargonizer;
+
+            analyzers = new List<IAnalyzer<AnalysisResult>> { titleAnalyzer, subtitleAnalyzer, contentAnalyzer };
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -54,50 +53,43 @@ namespace Crawler
                 Content = article.Content.Select(paragraph => lexer.GetTokens(paragraph).ToList()).ToList()
             };
 
-            foreach (var result in AnalyzeArticle(tokenizedArticle))
+            foreach (var analyzer in analyzers)
             {
-                DisplayResult(result);
+                DisplayResult(analyzer.Analyze(tokenizedArticle));
             }
 
             applicationLifetime.StopApplication();
         }
 
-        private IEnumerable AnalyzeArticle(Article<List<Token>> article)
+        private void DisplayResult(AnalysisResult analysisResult)
         {
-            var analyzers = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(x => x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IAnalyzer<>)));
-
-            foreach (var analyzerType in analyzers)
-            {
-                var analyzer = Activator.CreateInstance(analyzerType, new object[] { deJargonizer }) as IAnalyzer<object>;
-
-                yield return analyzer.Analyze(article);
-            }
-
-        }
-
-        private void DisplayResult(object obj)
-        {
-            var analysisResultAttr = obj.GetType().GetCustomAttribute<AnalysisResultAttribute>();
+            var analysisResultAttr = analysisResult.GetType().GetCustomAttribute<AnalysisResultAttribute>();
             if (analysisResultAttr != null)
             {
                 Console.WriteLine($"===================={analysisResultAttr.ArticlePart}====================");
             }
 
-            foreach (var prop in obj.GetType().GetProperties())
+            foreach (var prop in analysisResult.GetType().GetProperties())
             {
                 var resultAttr = prop.GetCustomAttribute<ResultAttribute>();
                 if (resultAttr != null)
                 {
-                    Console.WriteLine(resultAttr.Format,prop.GetValue(obj));
+                    var value = double.Parse(prop.GetValue(analysisResult).ToString());
+
+                    if (prop.GetCustomAttribute<NormalizeAttribute>() != null)
+                    {
+                        value = Normalize(value, analysisResult.AmountOfWords);
+                        Console.Write("(Normalized) ");
+                    }
+
+                    Console.WriteLine($"{resultAttr.Description}: {value:0.##} {resultAttr.Unit}");
                 }
             }
         }
 
-
-        public double Normalize(float value, int currentScale)
+        private double Normalize(double value, int currentScale)
         {
-	        return value / currentScale * NORMALIZATION_COMMON_SCALE;
+            return value / currentScale * NORMALIZATION_COMMON_SCALE;
         }
     }
 }

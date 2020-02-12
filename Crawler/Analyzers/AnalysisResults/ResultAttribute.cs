@@ -5,11 +5,17 @@ namespace Crawler.Analyzers.AnalysisResults
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class ResultAttribute : Attribute
     {
-        public string Format { get; }
+        public string Description { get; }
+        public string Unit { get; }
 
-        public ResultAttribute(string format)
+        public ResultAttribute(string description, string unit)
         {
-            this.Format = format;
+            this.Description = description;
+            this.Unit = unit;
+        }
+
+        public ResultAttribute(string description) : this(description, string.Empty)
+        {
         }
     }
 }

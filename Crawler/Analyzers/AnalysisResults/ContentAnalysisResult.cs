@@ -1,28 +1,29 @@
 ﻿namespace Crawler.Analyzers.AnalysisResults
 {
     [AnalysisResult("Content")]
-    public class ContentAnalysisResult
+    public class ContentAnalysisResult : AnalysisResult
     {
-        [Result("Amount of rare words: {0}")]
+        [Normalize]
+        [Result("Amount of rare words")]
         public int AmountOfRareWords { get; set; }
-        [Result("DeJargonizer score: {0}")]
+        [Result("DeJargonizer score")]
         public int DeJargonizerScore { get; set; }
-        [Result("Word length standart deviation: {0:0.00} words")]
-        public double WordLengthStandartDeviation { get; set; }
-        [Result("Percentage of emotions words: {0:0.00}%")]
+        [Result("Word length standard deviation", "words")]
+        public double WordLengthStandardDeviation { get; set; }
+        [Result("Percentage of emotions words", "%")]
         public double PercentageOfEmotionWords { get; set; }
-        [Result("Amount Question words {0}")]
+        [Result("Amount Question words")]
         public int AmountOfQuestionWords { get; set; }
 
-        [Result("Amount of numbers written in letters {0}")]
+        [Result("Amount of numbers written in letters")]
         public int AmountOfNumbersAsWords { get; set; }
-        [Result("Amount of numbers written in digits {0}")]
+        [Result("Amount of numbers written in digits")]
         public int AmountOfNumbersAsDigits { get; set; }
-        [Result("Average length of paragraph {0} words")]
+        [Result("Average length of paragraph", "words")]
         public float AverageLengthOfParagraph { get; set; }
-        [Result("Average amount of sentences in paragraph {0}")]
+        [Result("Average amount of sentences in paragraph")]
         public float AverageAmountOfSentencesInParagraph { get; set; }
-        [Result("Average amount of commas and periods in paragraph {0}")]
+        [Result("Average amount of commas and periods in paragraph")]
         public float AverageAmountOfCommasAndPeriodsInParagraph { get; set; }
     }
 }

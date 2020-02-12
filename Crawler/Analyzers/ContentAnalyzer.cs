@@ -1,7 +1,5 @@
 ﻿using Crawler.Analyzers.AnalysisResults;
 using Crawler.Analyzers.Helpers;
-using Crawler.DeJargonizer;
-using Crawler.ExtensionMethods;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using System.Collections.Generic;
@@ -11,47 +9,38 @@ namespace Crawler.Analyzers
 {
     public class ContentAnalyzer : IAnalyzer<ContentAnalysisResult>
     {
-        private readonly IDeJargonizer deJargonizer;
+        private readonly IWordsAnalyzer wordsAnalyzer;
+        private readonly IPunctuationAnalyzer punctuationAnalyzer;
+        private readonly IParagraphAnalyzer paragraphAnalyzer;
 
-        public ContentAnalyzer(IDeJargonizer deJargonizer)
+        public ContentAnalyzer(IWordsAnalyzer wordsAnalyzer, IPunctuationAnalyzer punctuationAnalyzer, IParagraphAnalyzer paragraphAnalyzer)
         {
-            this.deJargonizer = deJargonizer;
+            this.wordsAnalyzer = wordsAnalyzer;
+            this.punctuationAnalyzer = punctuationAnalyzer;
+            this.paragraphAnalyzer = paragraphAnalyzer;
         }
 
         public ContentAnalysisResult Analyze(Article<List<Token>> article)
         {
-            var content = article.Content;
-            var wordsAnalyzer = new WordsAnalyzer(deJargonizer, content.SelectMany(t => t).ToList());
-            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer();
+            var contentAsParagraphs = article.Content;
+            var contentAsText = contentAsParagraphs.SelectMany(t => t).ToList();
+            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(contentAsText);
 
             return new ContentAnalysisResult
             {
-                AmountOfNumbersAsWords = wordsAnalyzer.CalculateNumbersAsWords(),
-                AmountOfNumbersAsDigits = wordsAnalyzer.CalculateNumbersAsDigits(),
-                AmountOfQuestionWords = wordsAnalyzer.CalculateQuestionWords(),
-                PercentageOfEmotionWords = wordsAnalyzer.CalculatePercentageEmotionWords() * 100,
-                WordLengthStandartDeviation = wordsAnalyzer.CalculateStandardDeviation(),
+                AmountOfWords = wordsAnalyzer.CountWords(contentAsText),
+                AmountOfNumbersAsWords = wordsAnalyzer.CalculateNumbersAsWords(contentAsText),
+                AmountOfNumbersAsDigits = wordsAnalyzer.CalculateNumbersAsDigits(contentAsText),
+                AmountOfQuestionWords = wordsAnalyzer.CalculateQuestionWords(contentAsText),
+                PercentageOfEmotionWords = wordsAnalyzer.CalculatePercentageEmotionWords(contentAsText) * 100,
+                WordLengthStandardDeviation = wordsAnalyzer.CalculateWordsLengthStandardDeviation(contentAsText),
                 DeJargonizerScore = deJargonizerResult.Score,
                 AmountOfRareWords = deJargonizerResult.RareWords.Count(),
-                AverageLengthOfParagraph = CalculateAverageParagraphLength(content),
-                AverageAmountOfSentencesInParagraph = CalculateAverageAmountOfSentencesInParagraph(content),
-                AverageAmountOfCommasAndPeriodsInParagraph = CalculateAverageAmountOfCommasAndPeriodsInParagraph(content)
+                AverageLengthOfParagraph = paragraphAnalyzer.CalculateAverageLength(contentAsParagraphs),
+                AverageAmountOfSentencesInParagraph = paragraphAnalyzer.CalculateAverageAmountOfSentences(contentAsParagraphs),
+                AverageAmountOfCommasAndPeriodsInParagraph = paragraphAnalyzer.CalculateAverageAmountOfCommasAndPeriods(contentAsParagraphs)
             };
         }
 
-        private float CalculateAverageParagraphLength(List<List<Token>> paragraphs)
-        {
-            return paragraphs.CalculateAverageOfTokenGroups(t => t.TokenType != eTokenType.Punctuation);
-        }
-
-        private float CalculateAverageAmountOfCommasAndPeriodsInParagraph(List<List<Token>> paragraphs)
-        {
-            return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == "." || t.Value == ",");
-        }
-
-        private float CalculateAverageAmountOfSentencesInParagraph(List<List<Token>> paragraphs)
-        {
-            return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == ".");
-        }
     }
 }

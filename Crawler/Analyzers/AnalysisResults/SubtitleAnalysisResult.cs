@@ -1,13 +1,11 @@
 ﻿namespace Crawler.Analyzers.AnalysisResults
 {
     [AnalysisResult("Subtitle")]
-    public class SubtitleAnalysisResult
+    public class SubtitleAnalysisResult : AnalysisResult
     {
-        [Result("Amount of words: {0}")]
-        public int AmountOfWords { get; set; }
-        [Result("Amount of rare words: {0}")]
+        [Result("Amount of rare words")]
         public int AmountOfRareWords { get; set; }
-        [Result("Amount of punctuation characters: {0}")]
+        [Result("Amount of punctuation characters")]
         public int AmountOfPunctuation { get; set; }
     }
 }

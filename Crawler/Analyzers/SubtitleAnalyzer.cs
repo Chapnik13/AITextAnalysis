@@ -10,23 +10,21 @@ namespace Crawler.Analyzers
 {
     public class SubtitleAnalyzer : IAnalyzer<SubtitleAnalysisResult>
     {
-        private readonly IDeJargonizer deJargonizer;
+        private readonly IWordsAnalyzer wordsAnalyzer;
 
-        public SubtitleAnalyzer(IDeJargonizer deJargonizer)
+        public SubtitleAnalyzer(IWordsAnalyzer wordsAnalyzer)
         {
-            this.deJargonizer = deJargonizer;
+            this.wordsAnalyzer = wordsAnalyzer;
         }
 
         public SubtitleAnalysisResult Analyze(Article<List<Token>> article)
         {
-
             var subtitle = article.Subtitle;
-            var wordsAnalyzer = new WordsAnalyzer(deJargonizer, subtitle);
 
             return new SubtitleAnalysisResult
             {
-                AmountOfWords = wordsAnalyzer.CountWords(),
-                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer().RareWords.Count()
+                AmountOfWords = wordsAnalyzer.CountWords(subtitle),
+                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer(subtitle).RareWords.Count()
             };
         }
     }

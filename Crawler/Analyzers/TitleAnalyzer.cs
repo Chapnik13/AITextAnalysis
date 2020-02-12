@@ -1,6 +1,5 @@
 ﻿using Crawler.Analyzers.AnalysisResults;
 using Crawler.Analyzers.Helpers;
-using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using System.Collections.Generic;
@@ -10,22 +9,21 @@ namespace Crawler.Analyzers
 {
     public class TitleAnalyzer : IAnalyzer<TitleAnalysisResult>
     {
-        private readonly IDeJargonizer deJargonizer;
+        private readonly IWordsAnalyzer wordsAnalyzer;
 
-        public TitleAnalyzer(IDeJargonizer deJargonizer)
+        public TitleAnalyzer(IWordsAnalyzer wordsAnalyzer)
         {
-            this.deJargonizer = deJargonizer;
+            this.wordsAnalyzer = wordsAnalyzer;
         }
 
         public TitleAnalysisResult Analyze(Article<List<Token>> article)
         {
             var title = article.Title;
-            var wordsAnalyzer = new WordsAnalyzer(deJargonizer, title);
 
             return new TitleAnalysisResult
             {
-                AmountOfWords = wordsAnalyzer.CountWords(),
-                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer().RareWords.Count()
+                AmountOfWords = wordsAnalyzer.CountWords(title),
+                AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer(title).RareWords.Count()
             };
         }
     }
