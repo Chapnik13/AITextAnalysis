@@ -26,7 +26,7 @@ namespace Crawler.LexicalAnalyzer
                 if (token != null)
                 {
                     logger.LogDebug("Extracted {@Token}", token);
-                    yield return token;
+                    yield return CleanApostrophe(token);
                 }
 
                 text = text.Substring(token?.Value.Length ?? 1);
@@ -38,6 +38,16 @@ namespace Crawler.LexicalAnalyzer
             return config.TokensDefinitions
                 .Select(tokenDefinition => tokenDefinition.Match(text))
                 .FirstOrDefault(token => token != null);
+        }
+
+        private Token CleanApostrophe(Token token)
+        {
+            var indexOfApostophe = token.Value.IndexOf('\'');
+
+            if (indexOfApostophe == -1) return token;
+
+            var value = token.Value.Substring(0, indexOfApostophe);
+            return new Token(token.TokenType, value);
         }
     }
 }
