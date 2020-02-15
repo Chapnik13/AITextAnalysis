@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Crawler.Configs;
+using Crawler.ExtensionMethods;
 using Microsoft.Extensions.Options;
 
 namespace Crawler.DeJargonizer
@@ -51,8 +52,9 @@ namespace Crawler.DeJargonizer
 		}
 
 		private int GetWordCount(string word)
-		{
-			var wordExist = wordsCount.Value.TryGetValue(word.ToLower(), out var count);
+        {
+            var searchWord = word.ToLower().RemoveApostrophe();
+			var wordExist = wordsCount.Value.TryGetValue(searchWord, out var count);
 
 			return wordExist ? count : 0;
 		}

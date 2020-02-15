@@ -92,21 +92,5 @@ namespace CrawlerTests
 
             Assert.Contains(result, token => token.TokenType == eTokenType.Punctuation);
         }
-
-        [Theory]
-        [InlineData("noam's book", "noam")]
-        [InlineData("the books'", "books")]
-        public void GetTokens_ShouldRemoveApostrophe(string text, string cleanedWord)
-        {
-            config.TokensDefinitions = new[]
-            {
-                new TokenDefinition {TokenType = eTokenType.StringValue, Pattern = "^[A-Za-z]+('s|')?"}
-            };
-
-            var result = lexer.GetTokens(text);
-
-            Assert.Contains(result, token => token.Value == cleanedWord);
-
-        }
     }
 }
