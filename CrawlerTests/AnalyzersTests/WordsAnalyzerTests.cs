@@ -1,4 +1,4 @@
-﻿using Crawler.Analyzers.Helpers;
+﻿using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.Configs;
 using Crawler.DeJargonizer;
 using Crawler.Exceptions;

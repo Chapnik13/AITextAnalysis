@@ -1,12 +1,10 @@
-﻿using Crawler.Analyzers.AnalysisResults;
-using Crawler.Analyzers.Helpers;
-using Crawler.DeJargonizer;
+﻿using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Crawler.Analyzers
+namespace Crawler.Analyzers.Subtitle
 {
     public class SubtitleAnalyzer : IAnalyzer<SubtitleAnalysisResult>
     {

@@ -1,7 +1,9 @@
 ﻿using AngleSharp;
 using Crawler.Analyzers;
-using Crawler.Analyzers.AnalysisResults;
-using Crawler.Analyzers.Helpers;
+using Crawler.Analyzers.Content;
+using Crawler.Analyzers.Subtitle;
+using Crawler.Analyzers.Title;
+using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.Configs;
 using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;

@@ -1,11 +1,10 @@
-﻿using Crawler.Analyzers.AnalysisResults;
-using Crawler.Analyzers.Helpers;
+﻿using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Crawler.Analyzers
+namespace Crawler.Analyzers.Title
 {
     public class TitleAnalyzer : IAnalyzer<TitleAnalysisResult>
     {
@@ -28,7 +27,7 @@ namespace Crawler.Analyzers
                 AmountOfRareWords = wordsAnalyzer.CalculateDeJargonizer(title).RareWords.Count(),
                 AmountOfQuestionMarks = punctuationAnalyzer.CountCharacter('?', title),
                 AmountOfExclamationMarks = punctuationAnalyzer.CountCharacter('!', title),
-                AmountOfDashes = punctuationAnalyzer.CountCharacter('-',title),
+                AmountOfDashes = punctuationAnalyzer.CountCharacter('-', title),
                 AmountOfColons = punctuationAnalyzer.CountCharacter(':', title),
                 AmountOfQuotationMarks = punctuationAnalyzer.CountCharacter('"', title)
             };

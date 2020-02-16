@@ -2,7 +2,7 @@
 using Crawler.ExtensionMethods;
 using Crawler.LexicalAnalyzer;
 
-namespace Crawler.Analyzers.Helpers
+namespace Crawler.Analyzers.UtilAnalyzers
 {
     public class ParagraphAnalyzer : IParagraphAnalyzer
     {

@@ -1,7 +1,7 @@
 ﻿using Crawler.LexicalAnalyzer;
 using System.Collections.Generic;
 
-namespace Crawler.Analyzers.Helpers
+namespace Crawler.Analyzers.UtilAnalyzers
 {
     public interface IParagraphAnalyzer
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Crawler.Analyzers.AnalysisResults
+namespace Crawler.Analyzers.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class AnalysisResultAttribute : Attribute

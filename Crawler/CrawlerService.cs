@@ -1,5 +1,8 @@
 ﻿using Crawler.Analyzers;
-using Crawler.Analyzers.AnalysisResults;
+using Crawler.Analyzers.Attributes;
+using Crawler.Analyzers.Content;
+using Crawler.Analyzers.Subtitle;
+using Crawler.Analyzers.Title;
 using Crawler.LexicalAnalyzer;
 using Crawler.Models;
 using Crawler.SiteScraper;
@@ -43,6 +46,7 @@ namespace Crawler
             if (article is null)
             {
                 Console.WriteLine($"No text was found at {url}");
+
                 return;
             }
 
@@ -53,10 +57,7 @@ namespace Crawler
                 Content = article.Content.Select(paragraph => lexer.GetTokens(paragraph).ToList()).ToList()
             };
 
-            foreach (var analyzer in analyzers)
-            {
-                DisplayResult(analyzer.Analyze(tokenizedArticle));
-            }
+            analyzers.ForEach(analyzer => DisplayResult(analyzer.Analyze(tokenizedArticle)));
 
             applicationLifetime.StopApplication();
         }
@@ -64,6 +65,7 @@ namespace Crawler
         private void DisplayResult(AnalysisResult analysisResult)
         {
             var analysisResultAttr = analysisResult.GetType().GetCustomAttribute<AnalysisResultAttribute>();
+
             if (analysisResultAttr != null)
             {
                 Console.WriteLine($"===================={analysisResultAttr.ArticlePart}====================");
@@ -72,6 +74,7 @@ namespace Crawler
             foreach (var prop in analysisResult.GetType().GetProperties())
             {
                 var resultAttr = prop.GetCustomAttribute<ResultAttribute>();
+
                 if (resultAttr != null)
                 {
                     var value = double.Parse(prop.GetValue(analysisResult).ToString());

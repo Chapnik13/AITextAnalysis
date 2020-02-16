@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Crawler.LexicalAnalyzer;
 
-namespace Crawler.Analyzers.Helpers
+namespace Crawler.Analyzers.UtilAnalyzers
 {
 	public interface IPunctuationAnalyzer
 	{

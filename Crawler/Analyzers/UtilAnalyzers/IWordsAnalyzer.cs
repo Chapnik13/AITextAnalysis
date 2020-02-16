@@ -2,7 +2,7 @@
 using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;
 
-namespace Crawler.Analyzers.Helpers
+namespace Crawler.Analyzers.UtilAnalyzers
 {
     public interface IWordsAnalyzer
     {

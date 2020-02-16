@@ -1,4 +1,4 @@
-﻿using Crawler.Analyzers.Helpers;
+﻿using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.LexicalAnalyzer;
 using System.Collections.Generic;
 using Xunit;

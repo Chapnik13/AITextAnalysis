@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Crawler.Analyzers.Helpers
+namespace Crawler.Analyzers.UtilAnalyzers
 {
     public class WordsAnalyzer : IWordsAnalyzer
     {

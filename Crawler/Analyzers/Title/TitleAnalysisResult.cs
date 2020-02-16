@@ -1,4 +1,6 @@
-﻿namespace Crawler.Analyzers.AnalysisResults
+﻿using Crawler.Analyzers.Attributes;
+
+namespace Crawler.Analyzers.Title
 {
     [AnalysisResult("Title")]
     public class TitleAnalysisResult : AnalysisResult
