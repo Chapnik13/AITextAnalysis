@@ -65,11 +65,11 @@ namespace CrawlerTests
 		[Theory]
 		[InlineData("TO")]
 		[InlineData("1,000")]
-		public void Tag_ShouldReturnAlienTag_WhenOneToken(string word)
+		public void Tag_ShouldReturnUnknownTag_WhenOneToken(string word)
 		{
 			var result = posTagger.Tag(new List<Token> { new Token(eTokenType.StringValue, word) })[0].Type;
 
-			Assert.Equal(ePosTagType.Alien, result);
+			Assert.Equal(ePosTagType.Unknown, result);
 		}
 
 		[Theory]

@@ -39,7 +39,7 @@
 				case "VBZ":
 					return ePosTagType.Verb;
 				default:
-					return ePosTagType.Alien;
+					return ePosTagType.Unknown;
 			}
 		}
 	}

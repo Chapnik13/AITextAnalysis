@@ -18,7 +18,15 @@ jobs:
         dotnet-version: 3.1.100
     - name: Restore
       run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release
+    - name: Build Crawler
+      run: dotnet build Crawler
+    - name: Build CrawlerTests
+      run: dotnet build CrawlerTests
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+    - name: Install npm packages
+      run: cd .\PosTagger & npm i
+      shell: cmd
     - name: Test
       run: dotnet test
