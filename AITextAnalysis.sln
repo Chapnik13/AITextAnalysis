@@ -12,6 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PosTagger", "PosTagger", "{E5DF9C1C-ED06-4A43-B502-24367B1A0A4E}"
+	ProjectSection(SolutionItems) = preProject
+		PosTagger\app.js = PosTagger\app.js
+		PosTagger\package-lock.json = PosTagger\package-lock.json
+		PosTagger\package.json = PosTagger\package.json
+		PosTagger\PosTagger.njsproj.user = PosTagger\PosTagger.njsproj.user
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +37,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E5DF9C1C-ED06-4A43-B502-24367B1A0A4E} = {8938B4BC-310C-4FB9-A1A8-4C650F318038}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2EAE942-826C-4D83-9521-B7A98E1098AB}
