@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using Crawler.PartOfSpeechTagger;
 using Xunit;
 
 namespace CrawlerTests
@@ -23,13 +24,13 @@ namespace CrawlerTests
                 EmotionsFile = "data/Emotion.csv",
                 NumbersFile = "data/Numbers.csv",
                 QuestionsFile = "data/Questions.csv"
-            };
+            };  
 
             Mock.Get(dataFilesConfigOptions)
                 .Setup(options => options.Value)
                 .Returns(dataFilesConfig);
 
-            wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>(), dataFilesConfigOptions);
+            wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>(), Mock.Of<IPosTagger>(), dataFilesConfigOptions);
         }
 
         [Fact]

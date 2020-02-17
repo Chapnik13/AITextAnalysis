@@ -75,5 +75,37 @@ namespace Crawler.Analyzers.Content
         [Normalize]
         [Result("Amount of '\"'")]
         public int AmountOfQuotationMarks { get; set; }
+
+        [Normalize]
+        [Result("Amount of conjunctions")]
+        public int AmountOfConjunctions { get; set; }
+
+        [Normalize]
+        [Result("Amount of determiners")]
+        public int AmountOfDeterminers { get; set; }
+
+        [Normalize]
+        [Result("Amount of adjectives")]
+        public int AmountOfAdjectives { get; set; }
+
+        [Normalize]
+        [Result("Amount of noun")]
+        public int AmountOfNouns { get; set; }
+
+        [Normalize]
+        [Result("Amount of Pronouns")]
+        public int AmountOfPronouns { get; set; }
+
+        [Normalize]
+        [Result("Amount of adverb")]
+        public int AmountOfAdverbs { get; set; }
+
+        [Normalize]
+        [Result("Amount of verb")]
+        public int AmountOfVerbs { get; set; }
+
+        [Normalize]
+        [Result("Amount of unknowns")]
+        public int AmountOfUnknowns { get; set; }
     }
 }

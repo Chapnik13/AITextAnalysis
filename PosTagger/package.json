@@ -1,0 +1,15 @@
+{
+  "name": "pos-tagger",
+  "version": "0.0.0",
+  "description": "Pos-Tagger",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "wink-pos-tagger": "^2.2.2"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}

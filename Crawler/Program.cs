@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Threading.Tasks;
+using Crawler.PartOfSpeechTagger;
 
 namespace Crawler
 {
@@ -50,7 +51,9 @@ namespace Crawler
                 .AddTransient<IScraper, Scraper>()
                 .AddTransient<ILexer, Lexer>()
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
-                .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizeAnalyzer>()
+                .AddTransient<IDeJargonizer, DeJargonizeAnalyzer>()
+                .AddTransient<IPosTagger, NodeJSPosTagger>()
+                .AddTransient<IPosTagTypeClassifier, NodeJSPosTagTypeClassifier>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
                 .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>()
                 .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>()
