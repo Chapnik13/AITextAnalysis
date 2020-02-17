@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Crawler.Configs;
+using Crawler.ExtensionMethods;
 using Microsoft.Extensions.Options;
 
 namespace Crawler.DeJargonizer
 {
-	public class DeJargonizer : IDeJargonizer
+	public class DeJargonizeAnalyzer : IDeJargonizer
 	{
 		private readonly Lazy<Dictionary<string, int>> wordsCount;
 		private readonly WordsCountThresholdsConfig wordsCountThresholds;
 
-		public DeJargonizer(IWordsCountLoader wordsCountLoader, IOptions<WordsCountThresholdsConfig> wordsCountThresholdsConfig)
+		public DeJargonizeAnalyzer(IWordsCountLoader wordsCountLoader, IOptions<WordsCountThresholdsConfig> wordsCountThresholdsConfig)
 		{
 			wordsCountThresholds = wordsCountThresholdsConfig.Value;
 			wordsCount = new Lazy<Dictionary<string, int>>(wordsCountLoader.Load);
@@ -51,8 +52,9 @@ namespace Crawler.DeJargonizer
 		}
 
 		private int GetWordCount(string word)
-		{
-			var wordExist = wordsCount.Value.TryGetValue(word, out var count);
+        {
+            var searchWord = word.ToLower().RemoveApostrophe();
+			var wordExist = wordsCount.Value.TryGetValue(searchWord, out var count);
 
 			return wordExist ? count : 0;
 		}

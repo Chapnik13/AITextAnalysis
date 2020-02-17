@@ -1,35 +1,38 @@
 ﻿using Crawler.Analyzers;
+using Crawler.Analyzers.Attributes;
+using Crawler.Analyzers.Content;
+using Crawler.Analyzers.Subtitle;
+using Crawler.Analyzers.Title;
 using Crawler.LexicalAnalyzer;
+using Crawler.Models;
 using Crawler.SiteScraper;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Crawler.ExtensionMethods;
 
 namespace Crawler
 {
     public class CrawlerService : BackgroundService
     {
-	    private const int NORMALIZATION_COMMON_SCALE = 1000;
+        private const int NORMALIZATION_COMMON_SCALE = 1000;
 
         private readonly IScraper scraper;
         private readonly ILexer lexer;
         private readonly IHostApplicationLifetime applicationLifetime;
-        private readonly IWordsAnalyzer wordsAnalyzer;
-        private readonly IParagraphAnalyzer paragraphAnalyzer;
-        private readonly IPunctuationAnalyzer punctuationAnalyzer;
+        private readonly List<IAnalyzer<AnalysisResult>> analyzers;
 
-        public CrawlerService(IScraper scraper, ILexer lexer, IHostApplicationLifetime applicationLifetime, IWordsAnalyzer wordsAnalyzer,
-            IParagraphAnalyzer paragraphAnalyzer, IPunctuationAnalyzer punctuationAnalyzer)
+        public CrawlerService(IScraper scraper, ILexer lexer, IHostApplicationLifetime applicationLifetime,
+            IAnalyzer<TitleAnalysisResult> titleAnalyzer, IAnalyzer<SubtitleAnalysisResult> subtitleAnalyzer, IAnalyzer<ContentAnalysisResult> contentAnalyzer)
         {
             this.scraper = scraper;
             this.lexer = lexer;
             this.applicationLifetime = applicationLifetime;
-            this.wordsAnalyzer = wordsAnalyzer;
-            this.paragraphAnalyzer = paragraphAnalyzer;
-            this.punctuationAnalyzer = punctuationAnalyzer;
+
+            analyzers = new List<IAnalyzer<AnalysisResult>> { titleAnalyzer, subtitleAnalyzer, contentAnalyzer };
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -37,59 +40,59 @@ namespace Crawler
             Console.Write("Enter url ");
             var url = Console.ReadLine();
 
-            var paragraphsStrings = await scraper.ScrapAsync(url, cancellationToken)
+            var article = await scraper.ScrapAsync(url, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!paragraphsStrings.Any())
+            if (article is null)
             {
                 Console.WriteLine($"No text was found at {url}");
+
+                return;
             }
 
-            var paragraphsTokens = paragraphsStrings.Select(paragraph => lexer.GetTokens(paragraph)).ToList();
-            var allTokens = paragraphsTokens.SelectMany(t => t).ToList();
-            var text = paragraphsStrings.Aggregate((s1, s2) => $"{s1}{Environment.NewLine}{s2}");
+            var tokenizedArticle = new Article<List<Token>>
+            {
+                Title = lexer.GetTokens(article.Title).ToList(),
+                Subtitle = lexer.GetTokens(article.Subtitle).ToList(),
+                Content = article.Content.Select(paragraph => lexer.GetTokens(paragraph).ToList()).ToList()
+            };
 
-            var deJargonizerResult = wordsAnalyzer.CalculateDeJargonizer(allTokens);
+            analyzers.ForEach(analyzer => DisplayResult(analyzer.Analyze(tokenizedArticle)));
 
-            var wordsCount = allTokens.GetValuesByTokenTypes(eTokenType.StringValue, eTokenType.Number).Count();
-            var averageAmountOfCommaAndPeriod = paragraphAnalyzer.CalculateAverageAmountOfCommaAndPeriod(paragraphsTokens);
-            var numbersAsWords = wordsAnalyzer.CalculateNumbersAsWords(allTokens);
-            var numbersAsDigits = wordsAnalyzer.CalculateNumbersAsDigits(allTokens);
-            var questionWords = wordsAnalyzer.CalculateQuestionWords(allTokens);
-
-            Console.WriteLine(text);
-            Console.WriteLine($"average word length: {wordsAnalyzer.CalculateAverageLength(allTokens)}");
-            Console.WriteLine($"word standard deviation: {wordsAnalyzer.CalculateWordsLengthStandardDeviation(allTokens)}");
-            Console.WriteLine($"deJargonizer score: {deJargonizerResult.Score}");
-            Console.WriteLine($"deJargonizer rare words percentage: {deJargonizerResult.RareWordsPercentage}");
-
-            Console.WriteLine($"average paragraph length: {paragraphAnalyzer.CalculateAverageLength(paragraphsTokens)}");
-            Console.WriteLine($"average amount of commas and periods in a paragraph: {Normalize(averageAmountOfCommaAndPeriod, wordsCount)}");
-            Console.WriteLine($"average amount of sentences in a paragraph: {paragraphAnalyzer.CalculateAverageAmountOfSentences(paragraphsTokens)}");
-
-			Console.WriteLine($"amount of numbers as words: {Normalize(numbersAsWords, wordsCount)}");
-            Console.WriteLine($"amount of numbers as digits: {Normalize(numbersAsDigits, wordsCount)}");
-            Console.WriteLine($"percentage of emotion words: {wordsAnalyzer.CalculatePercentageEmotionWords(allTokens)}");
-            Console.WriteLine($"amount of question words: {Normalize(questionWords, wordsCount)}");
-
-            Console.WriteLine($"average words count between punctuation: {punctuationAnalyzer.CalculateAverageWordsCountBetweenPunctuation(allTokens)}");
-            Console.WriteLine($"max words count between punctuation: {punctuationAnalyzer.CalculateMaxWordsCountBetweenPunctuation(allTokens)}");
-            Console.WriteLine($"standard deviation of words count between punctuation: {punctuationAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(allTokens)}");
-            Console.WriteLine($"ninth decile words count between punctuation: {punctuationAnalyzer.CalculateWordsCountDecile(9, allTokens)}");
-            Console.WriteLine($"second decile words count between punctuation: {punctuationAnalyzer.CalculateWordsCountDecile(2, allTokens)}");
-
-            Console.WriteLine($"count question marks: {Normalize(punctuationAnalyzer.CountCharacter('?', allTokens), wordsCount)}");
-            Console.WriteLine($"count exclamation marks: {Normalize(punctuationAnalyzer.CountCharacter('!', allTokens), wordsCount)}");
-            Console.WriteLine($"count colons: {Normalize(punctuationAnalyzer.CountCharacter(':', allTokens), wordsCount)}");
-            Console.WriteLine($"count dashes: {Normalize(punctuationAnalyzer.CountCharacter('-', allTokens), wordsCount)}");
-            Console.WriteLine($"count quotations mark: {Normalize(punctuationAnalyzer.CountCharacter('"', allTokens)/2 , wordsCount)}");
-
-			applicationLifetime.StopApplication();
+            applicationLifetime.StopApplication();
         }
 
-        public double Normalize(float value, int currentScale)
+        private void DisplayResult(AnalysisResult analysisResult)
         {
-	        return value / currentScale * NORMALIZATION_COMMON_SCALE;
+            var analysisResultAttr = analysisResult.GetType().GetCustomAttribute<AnalysisResultAttribute>();
+
+            if (analysisResultAttr != null)
+            {
+                Console.WriteLine($"===================={analysisResultAttr.ArticlePart}====================");
+            }
+
+            foreach (var prop in analysisResult.GetType().GetProperties())
+            {
+                var resultAttr = prop.GetCustomAttribute<ResultAttribute>();
+
+                if (resultAttr != null)
+                {
+                    var value = double.Parse(prop.GetValue(analysisResult).ToString());
+
+                    if (prop.GetCustomAttribute<NormalizeAttribute>() != null)
+                    {
+                        value = Normalize(value, analysisResult.AmountOfWords);
+                        Console.Write("(Normalized) ");
+                    }
+
+                    Console.WriteLine($"{resultAttr.Description}: {value:0.##} {resultAttr.Unit}");
+                }
+            }
+        }
+
+        private double Normalize(double value, int currentScale)
+        {
+            return value / currentScale * NORMALIZATION_COMMON_SCALE;
         }
     }
 }

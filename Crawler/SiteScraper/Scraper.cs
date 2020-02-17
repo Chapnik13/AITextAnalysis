@@ -1,9 +1,9 @@
 ﻿using Crawler.Configs;
 using Crawler.Exceptions;
 using Crawler.MockupWrappers;
+using Crawler.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ namespace Crawler.SiteScraper
             this.config = config.Value;
         }
 
-        public async Task<List<string>> ScrapAsync(string address, CancellationToken cancellationToken)
+        public async Task<Article<string>?> ScrapAsync(string address, CancellationToken cancellationToken)
         {
             var document = await context.OpenAsync(address, cancellationToken).ConfigureAwait(false);
             logger.LogDebug("Opened document from {address}", address);
@@ -36,25 +36,29 @@ namespace Crawler.SiteScraper
                 throw new SelectorNotFoundException($"Selector for site {address} not found");
             }
 
-            var nodes = document.QuerySelectorAll(selector).ToList();
-
-            if (!nodes.Any())
+            var article = new Article<string>
             {
-                logger.LogError("Could not find {selector} in {address}", selector, address);
+                Title = document.QuerySelectorAll(selector.TitleSelector).Select(n => n.Text()).FirstOrDefault(),
+                Subtitle = document.QuerySelectorAll(selector.SubtitleSelector).Select(n => n.Text()).FirstOrDefault(),
+                Content = document.QuerySelectorAll(selector.ContentSelector).Select(n => n.Text()).ToList()
+            };
 
-                return new List<string>();
+            if (article.Title is null || article.Subtitle is null || !article.Content.Any())
+            {
+                logger.LogError("Could not find {@selector} in {address}", selector, address);
+
+                return null;
             }
 
-            logger.LogInformation("Extracted paragraphs from {address} {selector}", address, selector);
+            logger.LogInformation("Extracted paragraphs from {address} {@selector}", address, selector);
 
-            return nodes.Select(n => n.Text()).ToList();
+            return article;
         }
 
-        private string? FindSelector(string url)
+        private ScraperDefinition FindSelector(string url)
         {
-            return config.ScrapesrDefinitions
-                .Select(scraperDefinition => scraperDefinition.Match(url))
-                .FirstOrDefault(selector => selector != null);
+            return config.ScrapersDefinitions
+                .FirstOrDefault(scraperDefinition => scraperDefinition.Match(url));
         }
     }
 }

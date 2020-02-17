@@ -4,6 +4,6 @@ namespace Crawler.Configs
 {
     public class ScrapersConfig
     {
-        public ScraperDefinition[] ScrapesrDefinitions { get; set; }
+        public ScraperDefinition[] ScrapersDefinitions { get; set; }
     }
 }

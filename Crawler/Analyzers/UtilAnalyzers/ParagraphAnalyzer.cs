@@ -1,22 +1,22 @@
-﻿using Crawler.ExtensionMethods;
+﻿using System.Collections.Generic;
+using Crawler.ExtensionMethods;
 using Crawler.LexicalAnalyzer;
-using System.Collections.Generic;
 
-namespace Crawler.Analyzers
+namespace Crawler.Analyzers.UtilAnalyzers
 {
     public class ParagraphAnalyzer : IParagraphAnalyzer
     {
-        public float CalculateAverageLength(IEnumerable<IEnumerable<Token>> paragraphs)
+        public float CalculateAverageLength(List<List<Token>> paragraphs)
         {
             return paragraphs.CalculateAverageOfTokenGroups(t => t.TokenType != eTokenType.Punctuation);
         }
 
-        public float CalculateAverageAmountOfCommaAndPeriod(IEnumerable<IEnumerable<Token>> paragraphs)
+        public float CalculateAverageAmountOfCommasAndPeriods(List<List<Token>> paragraphs)
         {
             return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == "." || t.Value == ",");
         }
 
-        public float CalculateAverageAmountOfSentences(IEnumerable<IEnumerable<Token>> paragraphs)
+        public float CalculateAverageAmountOfSentences(List<List<Token>> paragraphs)
         {
             return paragraphs.CalculateAverageOfTokenGroups(t => t.Value == ".");
         }

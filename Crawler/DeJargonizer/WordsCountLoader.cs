@@ -1,8 +1,10 @@
 ﻿using Crawler.Configs;
 using CsvHelper;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Crawler.DeJargonizer
@@ -19,10 +21,10 @@ namespace Crawler.DeJargonizer
 		public Dictionary<string, int> Load()
 		{
 			using var reader = new StreamReader(new FileStream(wordsCountMatrixPath, FileMode.Open, FileAccess.Read));
-			using var csv = new CsvReader(reader);
-			csv.Configuration.HasHeaderRecord = false;
+            using var csv = new CsvReader(reader,
+                new CsvConfiguration(CultureInfo.CurrentCulture) {HasHeaderRecord = false});
 
-			return csv.GetRecords<WordCount>().ToDictionary(p => p.Word, p => p.Count);
+            return csv.GetRecords<WordCount>().ToDictionary(p => p.Word, p => p.Count);
 		}
 	}
 }

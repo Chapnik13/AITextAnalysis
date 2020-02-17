@@ -6,17 +6,17 @@ namespace Crawler.DeJargonizer
 {
 	public class DeJargonizerResult
 	{
-		public IEnumerable<string> AllWords { get; }
+		public List<string> AllWords { get; }
 
-		public IEnumerable<string> CommonWords { get; }
+		public List<string> CommonWords { get; }
 
 		public double CommonWordsPercentage { get; }
 
-		public IEnumerable<string> NormalWords { get; }
+		public List<string> NormalWords { get; }
 
 		public double NormalWordsPercentage { get; }
 
-		public IEnumerable<string> RareWords { get; }
+		public List<string> RareWords { get; }
 
 		public double RareWordsPercentage { get; }
 
@@ -28,17 +28,17 @@ namespace Crawler.DeJargonizer
 			IEnumerable<string> normalWords,
 			IEnumerable<string> rareWords)
 		{
-			CommonWords = commonWords;
+			CommonWords = commonWords.ToList();
 			NormalWords = normalWords.ToList();
 			RareWords = rareWords.ToList();
 			AllWords = allWords.ToList();
 
-			CommonWordsPercentage = CommonWords.Count() / (double)AllWords.Count();
-			NormalWordsPercentage = NormalWords.Count() / (double)AllWords.Count();
-			RareWordsPercentage = RareWords.Count() / (double)AllWords.Count();
+			CommonWordsPercentage = CommonWords.Count / (double)AllWords.Count;
+			NormalWordsPercentage = NormalWords.Count / (double)AllWords.Count;
+			RareWordsPercentage = RareWords.Count / (double)AllWords.Count;
 
 			Score = !AllWords.Any() ? 0 :
-				(int)Math.Round(100 - (NormalWords.Count() * 0.5f + RareWords.Count()) * 100 / AllWords.Count());
+				(int)Math.Round(100 - (NormalWords.Count * 0.5f + RareWords.Count) * 100 / AllWords.Count);
 		}
 	}
 }

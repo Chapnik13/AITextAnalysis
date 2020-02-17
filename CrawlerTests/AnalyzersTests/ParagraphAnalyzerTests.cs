@@ -1,9 +1,9 @@
-﻿using Crawler.Analyzers;
+﻿using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.LexicalAnalyzer;
 using System.Collections.Generic;
 using Xunit;
 
-namespace CrawlerTests
+namespace CrawlerTests.AnalyzersTests
 {
     public class ParagraphAnalyzerTests
     {
@@ -34,7 +34,7 @@ namespace CrawlerTests
         [Fact]
         public void CalculateAverageAmountOfCommaAndPeriod_SholudReturnOneAndHalf_GivenParagraphs()
         {
-            var result = paragraphAnalyzer.CalculateAverageAmountOfCommaAndPeriod(paragraphs);
+            var result = paragraphAnalyzer.CalculateAverageAmountOfCommasAndPeriods(paragraphs);
 
             Assert.Equal(EXPECTED_AVERAGE_AMOUNT_OF_COMMAS_AND_PERIODS, result);
         }

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using Crawler.Configs;
+﻿using Crawler.Configs;
 using Crawler.DeJargonizer;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace CrawlerTests
@@ -10,7 +10,7 @@ namespace CrawlerTests
 	public class DeJargonizerTests
 	{
 		private readonly IWordsCountLoader wordsCountLoader;
-		private readonly DeJargonizer deJargonizer;
+		private readonly DeJargonizeAnalyzer deJargonizer;
 
 		public DeJargonizerTests()
 		{
@@ -27,7 +27,8 @@ namespace CrawlerTests
 					{ "scout", 346 },
 					{ "to", 1561 },
 					{ "and", 4159 },
-					{ "result", 1541 }
+					{ "result", 1541 },
+                    {"books",1550 }
 				});
 
 			var wordsCountThresholdsConfigOptions = Mock.Of<IOptions<WordsCountThresholdsConfig>>();
@@ -36,7 +37,7 @@ namespace CrawlerTests
 				.Setup(w => w.Value)
 				.Returns(new WordsCountThresholdsConfig {CommonWordsThreshold = 1000, NormalWordsThreshold = 50});
 
-			deJargonizer = new DeJargonizer(wordsCountLoader,wordsCountThresholdsConfigOptions
+			deJargonizer = new DeJargonizeAnalyzer(wordsCountLoader,wordsCountThresholdsConfigOptions
 			);
 		}
 
@@ -113,5 +114,27 @@ namespace CrawlerTests
 
 			Assert.Equal(100, result.Score);
 		}
+
+        [Theory]
+        [InlineData("To")]
+        [InlineData("TO")]
+        [InlineData("to")]
+        public void Analyze_ShouldTreatTheSameOfUpperAndLowerCase(string word)
+        {
+            var result = deJargonizer.Analyze(new List<string> { word });
+
+            Assert.Contains(word, result.CommonWords);
+        }
+
+        [Theory]
+        [InlineData("To's")]
+        [InlineData("books'")]
+        [InlineData("books")]
+        public void Analyze_ShouldRemoveApostrophe(string word)
+        {
+            var result = deJargonizer.Analyze(new List<string> { word });
+
+            Assert.Contains(word, result.CommonWords);
+        }
 	}
 }

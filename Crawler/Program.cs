@@ -1,5 +1,9 @@
 ﻿using AngleSharp;
 using Crawler.Analyzers;
+using Crawler.Analyzers.Content;
+using Crawler.Analyzers.Subtitle;
+using Crawler.Analyzers.Title;
+using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.Configs;
 using Crawler.DeJargonizer;
 using Crawler.LexicalAnalyzer;
@@ -46,10 +50,14 @@ namespace Crawler
                 .AddTransient<IScraper, Scraper>()
                 .AddTransient<ILexer, Lexer>()
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
-                .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizer>()
+                .AddTransient<IDeJargonizer, DeJargonizer.DeJargonizeAnalyzer>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
                 .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>()
-                .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>();
+                .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>()
+                .AddTransient<IAnalyzer<ContentAnalysisResult>, ContentAnalyzer>()
+                .AddTransient<IAnalyzer<TitleAnalysisResult>, TitleAnalyzer>()
+                .AddTransient<IAnalyzer<SubtitleAnalysisResult>, SubtitleAnalyzer>();
+
         }
 
         private static void ConfigureLogging(HostBuilderContext context, LoggerConfiguration logging)
