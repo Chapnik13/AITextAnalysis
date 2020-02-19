@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Crawler.LexicalAnalyzer;
+using Crawler.PartOfSpeechTagger;
 
 namespace Crawler.Analyzers.UtilAnalyzers
 {
@@ -14,5 +15,7 @@ namespace Crawler.Analyzers.UtilAnalyzers
 		int CalculateWordsCountDecile(int decile, List<Token> tokens);
 
 		int CountCharacter(char chr, List<Token> tokens);
+
+		double CalculatePassiveVoiceSentencesPercentage(List<PosTagToken> posTagTokens);
 	}
 }

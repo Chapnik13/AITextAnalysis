@@ -1,6 +1,6 @@
 ﻿namespace Crawler.PartOfSpeechTagger
 {
-	public class NodeJSPosTagTypeClassifier : IPosTagTypeClassifier
+	public class PosTagTypeClassifier : IPosTagTypeClassifier
 	{
 		public ePosTagType Classify(string extendedTag)
 		{

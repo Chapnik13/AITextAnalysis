@@ -1,9 +1,9 @@
-﻿using Crawler.ExtensionMethods;
-using Crawler.LexicalAnalyzer;
+﻿using Crawler.LexicalAnalyzer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace Crawler.PartOfSpeechTagger
@@ -21,7 +21,7 @@ namespace Crawler.PartOfSpeechTagger
 
 		public List<PosTagToken> Tag(List<Token> tokens)
 		{
-			var text = string.Join(SEPERATOR, tokens.GetValuesByTokenTypes(eTokenType.StringValue));
+			var text = string.Join(SEPERATOR, tokens.Select(token => token.Value)).Replace('"', ' ');
 			var posTaggerPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../PosTagger/app.js"));
 
 			var outputStream = RunPosTagProcess(posTaggerPath, text);

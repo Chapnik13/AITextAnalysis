@@ -1,13 +1,24 @@
-﻿using Crawler.Exceptions;
+﻿using Crawler.Configs;
+using Crawler.Exceptions;
 using Crawler.LexicalAnalyzer;
+using Crawler.PartOfSpeechTagger;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Crawler.Analyzers.UtilAnalyzers
 {
     public class PunctuationAnalyzer : IPunctuationAnalyzer
     {
+	    private readonly IOptions<DataFilesConfig> config;
+
+	    public PunctuationAnalyzer(IOptions<DataFilesConfig> dataFilesConfig)
+	    {
+		    this.config = dataFilesConfig;
+	    }
+
         public double CalculateAverageWordsCountBetweenPunctuation(List<Token> tokens)
         {
             if (!tokens.Any()) return 0;
@@ -79,6 +90,46 @@ namespace Crawler.Analyzers.UtilAnalyzers
             }
 
             return wordsCount;
+        }
+
+        public double CalculatePassiveVoiceSentencesPercentage(List<PosTagToken> posTagTokens)
+        {
+	        var toBeForms = ExtractWordsFromFile(config.Value.ToBeFormsFile);
+	        var passiveVoiceSentencesCount = 0;
+	        var indexOfNextSentenceEnd = posTagTokens.FindIndex(token => token.ExtendedType == ".");
+            var totalSentencesCount = posTagTokens.Count(token => token.ExtendedType == ".");
+
+	        if (totalSentencesCount == 0)
+	        {
+		        totalSentencesCount = 1;
+	        }
+
+	        while (indexOfNextSentenceEnd != -1)
+	        {
+		        var sentence = posTagTokens.Take(indexOfNextSentenceEnd).ToList();
+
+		        var indexOfToBeForm = sentence.FindIndex(token => toBeForms.Contains(token.Value));
+		        var indexOfPastParticiple = sentence.FindIndex(token => token.ExtendedType == "VBN");
+
+		        var isPassiveVoiceSentence = indexOfToBeForm != -1 && indexOfPastParticiple != -1 && indexOfToBeForm < indexOfPastParticiple;
+
+		        if (isPassiveVoiceSentence)
+		        {
+			        passiveVoiceSentencesCount++;
+		        }
+
+		        posTagTokens = posTagTokens.Skip(indexOfNextSentenceEnd + 1).ToList();
+                indexOfNextSentenceEnd = posTagTokens.FindIndex(token => token.ExtendedType == ".");
+            }
+
+	        return passiveVoiceSentencesCount / (double)totalSentencesCount;
+        }
+
+        private IEnumerable<string> ExtractWordsFromFile(string filename)
+        {
+	        var filelines = File.ReadAllLines(filename);
+
+	        return filelines.Select(line => line.ToLower());
         }
     }
 }

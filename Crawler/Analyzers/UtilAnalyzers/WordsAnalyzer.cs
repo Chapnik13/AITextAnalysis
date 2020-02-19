@@ -73,7 +73,7 @@ namespace Crawler.Analyzers.UtilAnalyzers
             return words.Count(w => digitStrings.Contains(w.ToLower().RemoveApostrophe()));
         }
 
-        public double CalculatePercentageEmotionWords(List<Token> tokens)
+        public double CalculateEmotionWordsPercentage(List<Token> tokens)
         {
             var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
             var emotionStrings = ExtractWordsFromFile(config.Value.EmotionsFile);

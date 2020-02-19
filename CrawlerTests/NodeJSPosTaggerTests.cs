@@ -11,7 +11,7 @@ namespace CrawlerTests
 
 		public NodeJSPosTaggerTests()
 		{
-			posTagger = new NodeJSPosTagger(new NodeJSPosTagTypeClassifier());
+			posTagger = new NodeJSPosTagger(new PosTagTypeClassifier());
 		}
 
 		[Fact]
