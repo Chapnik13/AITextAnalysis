@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Crawler.Analyzers.UtilAnalyzers
 {
-    public interface IParagraphAnalyzer
+    public interface IParagraphsAnalyzer
     {
         float CalculateAverageLength(List<List<Token>> paragraphs);
         float CalculateAverageAmountOfCommasAndPeriods(List<List<Token>> paragraphs);

@@ -55,8 +55,9 @@ namespace Crawler
                 .AddTransient<IPosTagger, NodeJSPosTagger>()
                 .AddTransient<IPosTagTypeClassifier, PosTagTypeClassifier>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
-                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>()
+                .AddTransient<IParagraphsAnalyzer, ParagraphsAnalyzer>()
                 .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>()
+                .AddTransient<ISentencesAnalyzer, SentencesAnalyzer>()
                 .AddTransient<IAnalyzer<ContentAnalysisResult>, ContentAnalyzer>()
                 .AddTransient<IAnalyzer<TitleAnalysisResult>, TitleAnalyzer>()
                 .AddTransient<IAnalyzer<SubtitleAnalysisResult>, SubtitleAnalyzer>();

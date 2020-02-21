@@ -57,7 +57,7 @@ namespace Crawler.Analyzers.Content
         public float NinthDecileBetweenPunctuation { get; set; }
 
         [Result("Passive voice percentage")]
-        public double PassiveVoiceSentencesPercentage { get; set; }
+        public float PassiveVoiceSentencesPercentage { get; set; }
 
         [Normalize]
         [Result("Amount of '?'")]

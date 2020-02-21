@@ -5,21 +5,21 @@ using Xunit;
 
 namespace CrawlerTests.AnalyzersTests
 {
-    public class ParagraphAnalyzerTests
+    public class ParagraphsAnalyzerTests
     {
         private const float EXPECTED_AVERAGE_LENGTH = 1.5f;
         private const float EXPECTED_AVERAGE_AMOUNT_OF_COMMAS_AND_PERIODS = 1.5f;
         private const int EXPECTED_AVERAGE_AMOUNT_OF_SENTENCES = 1;
 
-        private readonly IParagraphAnalyzer paragraphAnalyzer;
+        private readonly IParagraphsAnalyzer paragraphAnalyzer;
 
         private readonly List<Token> paragraph1 = new List<Token> { new Token(eTokenType.StringValue, "Hello"), new Token(eTokenType.Punctuation, ","), new Token(eTokenType.StringValue, "World"), new Token(eTokenType.Punctuation, ".") };
         private readonly List<Token> paragraph2 = new List<Token> { new Token(eTokenType.StringValue, "Hello"), new Token(eTokenType.Punctuation, ".") };
         private readonly List<List<Token>> paragraphs;
 
-        public ParagraphAnalyzerTests()
+        public ParagraphsAnalyzerTests()
         {
-            paragraphAnalyzer = new ParagraphAnalyzer();
+            paragraphAnalyzer = new ParagraphsAnalyzer();
             paragraphs = new List<List<Token>> { paragraph1, paragraph2 };
         }
 

@@ -14,35 +14,11 @@ namespace CrawlerTests.AnalyzersTests
 {
     public class PunctuationAnalyzerTests
     {
-	    private const string PASSIVE_VOICE_SENTENCE = "The house will be cleaned by me every Saturday.";
-	    private const string ACTIVE_VOICE_SENTENCE = " Sue changed the flat tire. ";
-
 	    private ILexer lexer;
         private LexerConfig config;
-        private PunctuationAnalyzer punctuationsAnalyzer;
+        private PunctuationAnalyzer punctuationsAnalyzer = new PunctuationAnalyzer();
 
         public PunctuationAnalyzerTests()
-        {
-	        InitLexer();
-	        InitPunctuationAnalyzer();
-        }
-
-        private void InitPunctuationAnalyzer()
-        {
-	        var dataFilesConfigOptions = Mock.Of<IOptions<DataFilesConfig>>();
-	        var dataFilesConfig = new DataFilesConfig
-	        {
-		        ToBeFormsFile = "data/ToBeForms.csv"
-	        };
-
-	        Mock.Get(dataFilesConfigOptions)
-		        .Setup(options => options.Value)
-		        .Returns(dataFilesConfig);
-
-	        punctuationsAnalyzer = new PunctuationAnalyzer(dataFilesConfigOptions);
-        }
-
-        private void InitLexer()
         {
 	        var configOptions = Mock.Of<IOptions<LexerConfig>>();
 
@@ -225,43 +201,6 @@ namespace CrawlerTests.AnalyzersTests
             var result = punctuationsAnalyzer.CountCharacter(chr, lexer.GetTokens(sentence).ToList());
 
             Assert.Equal(expectedResult, result);
-        }
-
-        [Fact]
-        public void CalculatePassiveVoiceSentencesPercentage_ShouldReturnZero_WhenEmptyList()
-        {
-	        var result = punctuationsAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>());
-
-	        Assert.Equal(0, result);
-        }
-
-        [Fact]
-        public void CalculatePassiveVoiceSentencesPercentage_ShouldReturnHundredPercentage_WhenOnePassiveSentence()
-        {
-	        var result = punctuationsAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>
-	        {
-		        new PosTagToken{Value = "am"},
-                new PosTagToken{ExtendedType = "VBN"},
-                new PosTagToken{ExtendedType = "."}
-	        });
-
-	        Assert.Equal(1, result);
-        }
-
-        [Theory]
-        [InlineData(0, new[] { ACTIVE_VOICE_SENTENCE})]
-        [InlineData(0.25, new[] { ACTIVE_VOICE_SENTENCE, ACTIVE_VOICE_SENTENCE, ACTIVE_VOICE_SENTENCE, PASSIVE_VOICE_SENTENCE})]
-        [InlineData(0.5, new[] { ACTIVE_VOICE_SENTENCE, PASSIVE_VOICE_SENTENCE})]
-        [InlineData(0.75, new[] { ACTIVE_VOICE_SENTENCE, PASSIVE_VOICE_SENTENCE, PASSIVE_VOICE_SENTENCE, PASSIVE_VOICE_SENTENCE})]
-        [InlineData(1, new[] { PASSIVE_VOICE_SENTENCE })]
-        public void CalculatePassiveVoiceSentencesPercentage_ShouldReturnPassiveVoiceSentencesPercentage_WhenMoreThanOne(double expectedResult, string[] sentences)
-        {
-	        var tokens = lexer.GetTokens(string.Join(' ', sentences)).ToList();
-            var posTagTokens = new NodeJSPosTagger(new PosTagTypeClassifier()).Tag(tokens);
-
-	        var result = punctuationsAnalyzer.CalculatePassiveVoiceSentencesPercentage(posTagTokens);
-
-	        Assert.Equal(expectedResult, result);
         }
     }
 }
