@@ -43,7 +43,7 @@ class BBCUrlsSpider(CrawlSpider):
 			allow=(MATCH),
 			deny=(r'.*(m\.|\.test\.|\.stage\.|%|comments|\/live\/|\/athlete\/|\/weather\/).*'),
 			restrict_xpaths="//body"),
-			callback='parseNews',
+			callback='parseArticle',
 			follow=True),
 		Rule(LinkExtractor(
 			allow=(r'(\bnews\b)\D+(-\d+)$'), 
@@ -51,16 +51,11 @@ class BBCUrlsSpider(CrawlSpider):
 			restrict_xpaths="//body"), 
 			follow=True),
     )
-	
-	def parseNews(self, response):
-		year = self.getYearFromArray(response.xpath("//@data-seconds"))
 
-		return self.parseAll(response, year)
-
-	def parseAll(self, response, year):
+	def parseArticle(self, response):
 		item = WebSite()
 		item['url'] = self.cleanUrl(response.url)		
-		item['year'] = str(year)
+		item['year'] = str(self.getYearFromArray(response.xpath("//@data-seconds")))
 
 		if item['year'] == self.YEAR and item['url'] not in self.visitedUrls:
 			self.visitedUrls.append(response.url)
@@ -75,9 +70,6 @@ class BBCUrlsSpider(CrawlSpider):
 	def cleanUrl(self, url):
 		if(url.startswith('https')):
 			url = url.replace('https', 'http')
-
-		if(url.startswith('http://pal.live.')):
-			url = url.replace('http://pal.live.', 'http://www.')
 
 		return url
 

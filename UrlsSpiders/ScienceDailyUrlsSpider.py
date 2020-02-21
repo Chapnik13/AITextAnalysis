@@ -32,12 +32,12 @@ class ScienceDailyUrlsSpider(CrawlSpider):
 		SignalManager(dispatcher.Any).connect(self.spiderClosed, signals.spider_closed)
 
 	rules = (	
-		Rule(LinkExtractor(allow=(MATCH), deny=(), restrict_xpaths="//body"), callback='parsePage', follow=True),
+		Rule(LinkExtractor(allow=(MATCH), deny=(), restrict_xpaths="//body"), callback='parseArticle', follow=True),
 		Rule(LinkExtractor(allow=(), deny=(), restrict_xpaths="//body"), follow=True),
 	)
 
 				
-	def parsePage(self, response):
+	def parseArticle(self, response):
 		item = WebSite()
 		item['url'] = self.cleanUrl(response.url)	
 
@@ -54,9 +54,6 @@ class ScienceDailyUrlsSpider(CrawlSpider):
 	def cleanUrl(self, url):
 		if(url.startswith('https')):
 			url = url.replace('https', 'http')
-
-		if(url.startswith('http://pal.live.')):
-			url = url.replace('http://pal.live.', 'http://www.')
 
 		return url
 	
