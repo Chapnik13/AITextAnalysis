@@ -12,7 +12,6 @@ from scrapy.signalmanager import SignalManager
 from scrapy.exceptions import CloseSpider
 from scrapy import signals
 from pydispatch import dispatcher
-from distinctUrls import distinct
 
 class WebSite(scrapy.Item):
 	url = scrapy.Field()
@@ -33,31 +32,39 @@ class ScienceDailyUrlsSpider(CrawlSpider):
 		SignalManager(dispatcher.Any).connect(self.spiderClosed, signals.spider_closed)
 
 	rules = (	
-		Rule(LinkExtractor(allow=(), deny=(), restrict_xpaths="//body"), callback='parsePage', follow=True),
+		Rule(LinkExtractor(allow=(MATCH), deny=(), restrict_xpaths="//body"), callback='parsePage', follow=True),
+		Rule(LinkExtractor(allow=(), deny=(), restrict_xpaths="//body"), follow=True),
 	)
 
 				
 	def parsePage(self, response):
 		item = WebSite()
-		item['url'] = response.url		
+		item['url'] = self.cleanUrl(response.url)	
 
-		if re.match(self.MATCH, item['url']) != None:
-			self.visitedUrls.append(response.url)
+		if item['url'] not in self.visitedUrls:
+			self.visitedUrls.append(item['url'] )
 
 			print("Found", len(self.visitedUrls), "urls")
-			print(len(self.visitedUrls) == self.LIMIT_URLS_COUNT)
+
 			if len(self.visitedUrls) == self.LIMIT_URLS_COUNT:
 				raise CloseSpider('LIMIT_URLS_COUNT')
 
 			return item
+
+	def cleanUrl(self, url):
+		if(url.startswith('https')):
+			url = url.replace('https', 'http')
+
+		if(url.startswith('http://pal.live.')):
+			url = url.replace('http://pal.live.', 'http://www.')
+
+		return url
 	
 	def spiderClosed(self, spider):
 		if not os.path.exists("urls-results"):
 			os.makedirs("urls-results")
 
-		self.printUrlsToFiles("ScienceDaily-visitedUrls1.txt", "urls-results")
-
-		distinct("urls-results" + self.YEAR + "-" + "ScienceDaily-visitedUrls1.txt", "ScienceDaily-visitedUrls-distinct.txt")
+		self.printUrlsToFiles("ScienceDaily-visitedUrls2.txt", "urls-results")
 
 	def printUrlsToFiles(self, filename, folder = ""):
 		folderPath = folder + "/" if folder else ""

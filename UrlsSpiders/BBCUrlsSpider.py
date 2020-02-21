@@ -12,13 +12,12 @@ from scrapy.signalmanager import SignalManager
 from scrapy.exceptions import CloseSpider
 from scrapy import signals
 from pydispatch import dispatcher
-from distinctUrls import distinct
 
-'''
-	The '".\urls-results\2019-BBC-visitedUrls.txt"' file was not generated 
-	using this spider but by filtring the results from the BBC spider for 
-	the jargon project.
-'''
+
+#	The '".\urls-results\2019-BBC-visitedUrls.txt"' file was not generated 
+#	using this spider but by filtring the results from the BBC spider for 
+#	the jargon project.
+
 
 class WebSite(scrapy.Item):
 	url = scrapy.Field()
@@ -40,19 +39,30 @@ class BBCUrlsSpider(CrawlSpider):
 		SignalManager(dispatcher.Any).connect(self.spiderClosed, signals.spider_closed)
 
 	rules = (	
-		Rule(LinkExtractor(allow=(r'(\bnews\b)\D+(-\d+)$'),
-						    deny=(r'.*(m\.|\.test\.|\.stage\.|%|comments|\/live\/|\/athlete\/|\/weather\/).*'),
-							restrict_xpaths="//body"),
-			 				callback='parseNews',
-			 				follow=True),
+		Rule(LinkExtractor(
+			allow=(MATCH),
+			deny=(r'.*(m\.|\.test\.|\.stage\.|%|comments|\/live\/|\/athlete\/|\/weather\/).*'),
+			restrict_xpaths="//body"),
+			callback='parseNews',
+			follow=True),
+		Rule(LinkExtractor(
+			allow=(r'(\bnews\b)\D+(-\d+)$'), 
+			deny=(r'.*(m\.|\.test\.|\.stage\.|%|comments|\/live\/|\/athlete\/|\/weather\/).*'), 
+			restrict_xpaths="//body"), 
+			follow=True),
     )
-				
+	
+	def parseNews(self, response):
+		year = self.getYearFromArray(response.xpath("//@data-seconds"))
+
+		return self.parseAll(response, year)
+
 	def parseAll(self, response, year):
 		item = WebSite()
-		item['url'] = response.url		
+		item['url'] = self.cleanUrl(response.url)		
 		item['year'] = str(year)
 
-		if item['year'] == self.YEAR and re.match(self.MATCH, item['url']) != None:
+		if item['year'] == self.YEAR and item['url'] not in self.visitedUrls:
 			self.visitedUrls.append(response.url)
 
 			print("Found", len(self.visitedUrls), "urls")
@@ -61,11 +71,15 @@ class BBCUrlsSpider(CrawlSpider):
 				raise CloseSpider('LIMIT_URLS_COUNT')
 
 			return item
-	
-	def parseNews(self, response):
-		year = self.getYearFromArray(response.xpath("//@data-seconds"))
 
-		return self.parseAll(response, year)
+	def cleanUrl(self, url):
+		if(url.startswith('https')):
+			url = url.replace('https', 'http')
+
+		if(url.startswith('http://pal.live.')):
+			url = url.replace('http://pal.live.', 'http://www.')
+
+		return url
 
 	def getYearFromArray(self, array):
 		if len(array) >= 1:
@@ -77,9 +91,7 @@ class BBCUrlsSpider(CrawlSpider):
 		if not os.path.exists("urls-results"):
 			os.makedirs("urls-results")
 
-		self.printUrlsToFiles("BBC-visitedUrls.txt", "urls-results")
-
-		distinct("BBC-visitedUrls.txt", "BBC-visitedUrls-distinct.txt")
+		self.printUrlsToFiles("BBC-visitedUrls2.txt", "urls-results")
 
 	def printUrlsToFiles(self, filename, folder = ""):
 		folderPath = folder + "/" if folder else ""
