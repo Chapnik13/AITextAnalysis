@@ -1,18 +1,18 @@
-﻿using Crawler.Analyzers.UtilAnalyzers;
+﻿using Crawler;
+using Crawler.Analyzers.UtilAnalyzers;
 using Crawler.Configs;
-using Crawler.Exceptions;
 using Crawler.LexicalAnalyzer;
+using Crawler.PartOfSpeechTagger;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
-using Crawler.PartOfSpeechTagger;
 using Xunit;
 
 namespace CrawlerTests.AnalyzersTests
 {
-    public class SentencesAnalyzerTests
+	public class SentencesAnalyzerTests
     {
 	    private const string PASSIVE_VOICE_SENTENCE = "The house will be cleaned by me every Saturday.";
 	    private const string ACTIVE_VOICE_SENTENCE = " Sue changed the flat tire. ";
@@ -20,6 +20,8 @@ namespace CrawlerTests.AnalyzersTests
 	    private ILexer lexer;
         private LexerConfig config;
         private SentencesAnalyzer sentencesAnalyzer;
+        private IDataFileLoader dataFileLoader;
+        private IOptions<DataFilesConfig> dataFilesConfig;
 
         public SentencesAnalyzerTests()
         {
@@ -29,17 +31,17 @@ namespace CrawlerTests.AnalyzersTests
 
         private void InitPunctuationAnalyzer()
         {
-	        var dataFilesConfigOptions = Mock.Of<IOptions<DataFilesConfig>>();
-	        var dataFilesConfig = new DataFilesConfig
-	        {
-		        ToBeFormsFile = "data/ToBeForms.csv"
-	        };
+	        dataFileLoader = Mock.Of<IDataFileLoader>();
+	        dataFilesConfig = Mock.Of<IOptions<DataFilesConfig>>();
 
-	        Mock.Get(dataFilesConfigOptions)
-		        .Setup(options => options.Value)
-		        .Returns(dataFilesConfig);
+	        Mock.Get(dataFilesConfig)
+		        .Setup(config => config.Value)
+		        .Returns(new DataFilesConfig
+		        {
+			        ToBeFormsFile = string.Empty
+		        });
 
-	        sentencesAnalyzer = new SentencesAnalyzer(dataFilesConfigOptions);
+			sentencesAnalyzer = new SentencesAnalyzer(dataFilesConfig, dataFileLoader);
         }
 
         private void InitLexer()
@@ -64,7 +66,11 @@ namespace CrawlerTests.AnalyzersTests
         [Fact]
         public void CalculatePassiveVoiceSentencesPercentage_ShouldReturnZero_WhenEmptyList()
         {
-	        var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>());
+	        Mock.Get(dataFileLoader)
+		        .Setup(loader => loader.Load(It.IsAny<string>()))
+		        .Returns(new List<string>());
+
+            var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>());
 
 	        Assert.Equal(0, result);
         }
@@ -72,7 +78,11 @@ namespace CrawlerTests.AnalyzersTests
         [Fact]
         public void CalculatePassiveVoiceSentencesPercentage_ShouldReturnHundredPercentage_WhenOnePassiveSentence()
         {
-	        var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>
+	        Mock.Get(dataFileLoader)
+		        .Setup(loader => loader.Load(It.IsAny<string>()))
+		        .Returns(new List<string> { "am" });
+
+            var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>
 	        {
 		        new PosTagToken{Value = "am"},
                 new PosTagToken{ExtendedType = "VBN"},
@@ -90,7 +100,11 @@ namespace CrawlerTests.AnalyzersTests
         [InlineData(1, new[] { PASSIVE_VOICE_SENTENCE })]
         public void CalculatePassiveVoiceSentencesPercentage_ShouldReturnPassiveVoiceSentencesPercentage_WhenMoreThanOne(double expectedResult, string[] sentences)
         {
-	        var tokens = lexer.GetTokens(string.Join(' ', sentences)).ToList();
+	        Mock.Get(dataFileLoader)
+		        .Setup(loader => loader.Load(It.IsAny<string>()))
+		        .Returns(new List<string> { "will" });
+
+            var tokens = lexer.GetTokens(string.Join(' ', sentences)).ToList();
             var posTagTokens = new NodeJSPosTagger(new PosTagTypeClassifier()).Tag(tokens);
 
 	        var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(posTagTokens);

@@ -50,6 +50,7 @@ namespace Crawler
                 .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
                 .AddTransient<IScraper, Scraper>()
                 .AddTransient<ILexer, Lexer>()
+                .AddTransient<IDataFileLoader, DataFileLoader>()
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
                 .AddTransient<IDeJargonizer, DeJargonizeAnalyzer>()
                 .AddTransient<IPosTagger, NodeJSPosTagger>()

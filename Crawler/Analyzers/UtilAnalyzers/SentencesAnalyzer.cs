@@ -2,7 +2,6 @@
 using Crawler.PartOfSpeechTagger;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Crawler.Analyzers.UtilAnalyzers
@@ -13,10 +12,12 @@ namespace Crawler.Analyzers.UtilAnalyzers
 		private const string END_OF_SENTENCE_EXTENDED_TYPE = ".";
 
 		private readonly IOptions<DataFilesConfig> config;
+		private readonly IDataFileLoader dataFileLoader;
 
-		public SentencesAnalyzer(IOptions<DataFilesConfig> dataFilesConfig)
+		public SentencesAnalyzer(IOptions<DataFilesConfig> dataFilesConfig, IDataFileLoader dataFileLoader)
 		{
 			this.config = dataFilesConfig;
+			this.dataFileLoader = dataFileLoader;
 		}
 
 		public float CalculatePassiveVoiceSentencesPercentage(List<PosTagToken> posTagTokens)
@@ -48,21 +49,14 @@ namespace Crawler.Analyzers.UtilAnalyzers
 
 		private bool IsPassiveVoiceSentence(List<PosTagToken> sentence)
 		{
-			var toBeForms = ExtractWordsFromFile(config.Value.ToBeFormsFile);
-
+			var toBeForms = dataFileLoader.Load(config.Value.ToBeFormsFile);
+				
 			var indexOfToBeForm = sentence.FindIndex(token => toBeForms.Contains(token.Value.ToLower()));
 			var indexOfPastParticiple = sentence.FindIndex(token => token.ExtendedType == PAST_PARTICIPLE_VERB_EXTENDED_TYPE);
 
 			var isPassiveVoiceSentence = indexOfToBeForm != -1 && indexOfPastParticiple != -1 && indexOfToBeForm < indexOfPastParticiple;
 
 			return isPassiveVoiceSentence;
-		}
-
-		private IEnumerable<string> ExtractWordsFromFile(string filename)
-		{
-			var filelines = File.ReadAllLines(filename);
-
-			return filelines.Select(line => line.ToLower());
 		}
 	}
 }
