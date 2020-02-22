@@ -2,42 +2,49 @@
 {
 	public class PosTagTypeClassifier : IPosTagTypeClassifier
 	{
-		public ePosTagType Classify(string extendedTag)
+		public ePosTagType Classify(ePosTagExtendedType extendedTag)
 		{
 			switch (extendedTag)
 			{
-				case "CC":
-				case "IN":
+				case ePosTagExtendedType.CoordinatingConjunction:
+				case ePosTagExtendedType.PrepositionOrSubordinatingConjunction:
 					return ePosTagType.Conjunction;
-				case "DT":
-				case "WDT":
+
+				case ePosTagExtendedType.Determiner:
+				case ePosTagExtendedType.WhDeterminer:
 					return ePosTagType.Determiner;
-				case "JJ":
-				case "JJR":
-				case "JJS":
+
+				case ePosTagExtendedType.Adjective:
+				case ePosTagExtendedType.ComparativeAdjective:
+				case ePosTagExtendedType.SuperlativeAdjective:
 					return ePosTagType.Adjective;
-				case "NN":
-				case "NNS":
-				case "NNP":
-				case "NNPS":
+
+				case ePosTagExtendedType.SingularOrMassNoun:
+				case ePosTagExtendedType.PluralNoun:
+				case ePosTagExtendedType.SingularProperNoun:
+				case ePosTagExtendedType.PluralProperNoun:
 					return ePosTagType.Noun;
-				case "PRP":
-				case "PRP$":
-				case "WP":
-				case "WP$":
+
+				case ePosTagExtendedType.PersonalPronoun:
+				case ePosTagExtendedType.PossessivePronoun:
+				case ePosTagExtendedType.WhPronoun:
+				case ePosTagExtendedType.PossessiveWhPronoun:
 					return ePosTagType.Pronoun;
-				case "RB":
-				case "RBR":
-				case "RBS":
-				case "WRB":
+
+				case ePosTagExtendedType.Adverb:
+				case ePosTagExtendedType.ComparativeAdverb:
+				case ePosTagExtendedType.SuperlativeAdverb:
+				case ePosTagExtendedType.WhAdverb:
 					return ePosTagType.Adverb;
-				case "VB":
-				case "VBD":
-				case "VBG":
-				case "VBN":
-				case "VBP":
-				case "VBZ":
+
+				case ePosTagExtendedType.BaseFormVerb:
+				case ePosTagExtendedType.PastTenseVerb:
+				case ePosTagExtendedType.GerundOrPresentParticipleVerb:
+				case ePosTagExtendedType.PastParticipleVerb:
+				case ePosTagExtendedType.NonThirdPersonSingularPresentVerb:
+				case ePosTagExtendedType.ThirdPersonSingularPresentVerb:
 					return ePosTagType.Verb;
+
 				default:
 					return ePosTagType.Unknown;
 			}

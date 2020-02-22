@@ -2,6 +2,6 @@
 {
 	public interface IPosTagTypeClassifier
 	{
-		ePosTagType Classify(string extendedTag);
+		ePosTagType Classify(ePosTagExtendedType extendedTag);
 	}
 }

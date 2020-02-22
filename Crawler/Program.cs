@@ -1,4 +1,5 @@
-﻿using AngleSharp;
+﻿using System.Text.Json.Serialization;
+using AngleSharp;
 using Crawler.Analyzers;
 using Crawler.Analyzers.Content;
 using Crawler.Analyzers.Subtitle;
@@ -55,6 +56,8 @@ namespace Crawler
                 .AddTransient<IDeJargonizer, DeJargonizeAnalyzer>()
                 .AddTransient<IPosTagger, NodeJSPosTagger>()
                 .AddTransient<IPosTagTypeClassifier, PosTagTypeClassifier>()
+                .AddTransient<IPosTagExtendedTypeClassifier, PosTagExtendedTypeClassifier>()
+                .AddTransient<JsonConverter<ePosTagExtendedType>, JsonToEnumPosTagExtendedTypeConverter>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
                 .AddTransient<IParagraphsAnalyzer, ParagraphsAnalyzer>()
                 .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>()

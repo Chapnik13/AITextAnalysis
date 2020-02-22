@@ -85,8 +85,8 @@ namespace CrawlerTests.AnalyzersTests
             var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(new List<PosTagToken>
 	        {
 		        new PosTagToken{Value = "am"},
-                new PosTagToken{ExtendedType = "VBN"},
-                new PosTagToken{ExtendedType = "."}
+                new PosTagToken{ExtendedType = ePosTagExtendedType.PastParticipleVerb},
+                new PosTagToken{ExtendedType = ePosTagExtendedType.EndOfSentence}
 	        });
 
 	        Assert.Equal(1, result);
@@ -105,7 +105,7 @@ namespace CrawlerTests.AnalyzersTests
 		        .Returns(new List<string> { "will" });
 
             var tokens = lexer.GetTokens(string.Join(' ', sentences)).ToList();
-            var posTagTokens = new NodeJSPosTagger(new PosTagTypeClassifier()).Tag(tokens);
+            var posTagTokens = new NodeJSPosTagger(new PosTagTypeClassifier(), new JsonToEnumPosTagExtendedTypeConverter(new PosTagExtendedTypeClassifier())).Tag(tokens);
 
 	        var result = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(posTagTokens);
 

@@ -8,9 +8,6 @@ namespace Crawler.Analyzers.UtilAnalyzers
 {
 	public class SentencesAnalyzer : ISentencesAnalyzer
 	{
-		private const string PAST_PARTICIPLE_VERB_EXTENDED_TYPE = "VBN";
-		private const string END_OF_SENTENCE_EXTENDED_TYPE = ".";
-
 		private readonly IOptions<DataFilesConfig> config;
 		private readonly IDataFileLoader dataFileLoader;
 
@@ -23,8 +20,8 @@ namespace Crawler.Analyzers.UtilAnalyzers
 		public float CalculatePassiveVoiceSentencesPercentage(List<PosTagToken> posTagTokens)
 		{
 			var passiveVoiceSentencesCount = 0;
-			var indexOfNextSentenceEnd = posTagTokens.FindIndex(token => token.ExtendedType == END_OF_SENTENCE_EXTENDED_TYPE);
-			var totalSentencesCount = posTagTokens.Count(token => token.ExtendedType == END_OF_SENTENCE_EXTENDED_TYPE);
+			var indexOfNextSentenceEnd = posTagTokens.FindIndex(token => token.ExtendedType == ePosTagExtendedType.EndOfSentence);
+			var totalSentencesCount = posTagTokens.Count(token => token.ExtendedType == ePosTagExtendedType.EndOfSentence);
 
 			if (totalSentencesCount == 0)
 			{
@@ -41,7 +38,7 @@ namespace Crawler.Analyzers.UtilAnalyzers
 				}
 
 				posTagTokens = posTagTokens.Skip(indexOfNextSentenceEnd + 1).ToList();
-				indexOfNextSentenceEnd = posTagTokens.FindIndex(token => token.ExtendedType == END_OF_SENTENCE_EXTENDED_TYPE);
+				indexOfNextSentenceEnd = posTagTokens.FindIndex(token => token.ExtendedType == ePosTagExtendedType.EndOfSentence);
 			}
 
 			return passiveVoiceSentencesCount / (float)totalSentencesCount;
@@ -52,7 +49,7 @@ namespace Crawler.Analyzers.UtilAnalyzers
 			var toBeForms = dataFileLoader.Load(config.Value.ToBeFormsFile);
 				
 			var indexOfToBeForm = sentence.FindIndex(token => toBeForms.Contains(token.Value.ToLower()));
-			var indexOfPastParticiple = sentence.FindIndex(token => token.ExtendedType == PAST_PARTICIPLE_VERB_EXTENDED_TYPE);
+			var indexOfPastParticiple = sentence.FindIndex(token => token.ExtendedType == ePosTagExtendedType.PastParticipleVerb);
 
 			var isPassiveVoiceSentence = indexOfToBeForm != -1 && indexOfPastParticiple != -1 && indexOfToBeForm < indexOfPastParticiple;
 
