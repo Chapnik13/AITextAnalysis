@@ -4,7 +4,7 @@ using Crawler.LexicalAnalyzer;
 
 namespace Crawler.Analyzers.UtilAnalyzers
 {
-    public class ParagraphAnalyzer : IParagraphAnalyzer
+    public class ParagraphsAnalyzer : IParagraphsAnalyzer
     {
         public float CalculateAverageLength(List<List<Token>> paragraphs)
         {

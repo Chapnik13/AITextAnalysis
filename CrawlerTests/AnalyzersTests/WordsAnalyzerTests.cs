@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using Crawler;
 using Crawler.PartOfSpeechTagger;
 using Xunit;
 
@@ -15,22 +16,29 @@ namespace CrawlerTests
     public class WordsAnalyzerTests
     {
         private readonly WordsAnalyzer wordsAnalyzer;
+        private readonly IDataFileLoader dataFileLoader;
+
+        private IOptions<DataFilesConfig> dataFilesConfig;
 
         public WordsAnalyzerTests()
         {
-            var dataFilesConfigOptions = Mock.Of<IOptions<DataFilesConfig>>();
-            var dataFilesConfig = new DataFilesConfig
-            {
-                EmotionsFile = "data/Emotion.csv",
-                NumbersFile = "data/Numbers.csv",
-                QuestionsFile = "data/Questions.csv"
-            };  
+	        dataFileLoader = Mock.Of<IDataFileLoader>();
+	        dataFilesConfig = Mock.Of<IOptions<DataFilesConfig>>();
 
-            Mock.Get(dataFilesConfigOptions)
-                .Setup(options => options.Value)
-                .Returns(dataFilesConfig);
+	        Mock.Get(dataFilesConfig)
+		        .Setup(config => config.Value)
+		        .Returns(new DataFilesConfig
+		        {
+			        EmotionsFile = string.Empty,
+			        QuestionsFile = string.Empty,
+			        NumbersFile = string.Empty
+		        });
 
-            wordsAnalyzer = new WordsAnalyzer(Mock.Of<IDeJargonizer>(), Mock.Of<IPosTagger>(), dataFilesConfigOptions);
+            wordsAnalyzer = new WordsAnalyzer(
+		        Mock.Of<IDeJargonizer>(),
+		        Mock.Of<IPosTagger>(),
+		        dataFilesConfig,
+		        dataFileLoader);
         }
 
         [Fact]
@@ -102,7 +110,13 @@ namespace CrawlerTests
         [InlineData(1, "four", "e1ee", "a3i", "nnn")]
         public void CalculateNumbersAsWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
         {
+	        Mock.Get(dataFileLoader)
+		        .Setup(loader => loader.Load(It.IsAny<string>()))
+		        .Returns(new List<string>{"one", "four", "three"});
+
+
             var result = wordsAnalyzer.CalculateNumbersAsWords(words.Select(w => new Token(eTokenType.StringValue, w)).ToList());
+            
             Assert.Equal(expectedResult, result);
         }
 
@@ -111,7 +125,12 @@ namespace CrawlerTests
         [InlineData(3, "where", "what", "whom", "hjh")]
         public void CalculateQuestionWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
         {
+	        Mock.Get(dataFileLoader)
+		        .Setup(loader => loader.Load(It.IsAny<string>()))
+		        .Returns(new List<string> { "why", "where", "what", "whom" });
+
             var result = wordsAnalyzer.CalculateQuestionWords(words.Select(w => new Token(eTokenType.StringValue, w)).ToList());
+
             Assert.Equal(expectedResult, result);
         }
 
@@ -120,7 +139,12 @@ namespace CrawlerTests
         [InlineData(0.25, "Censored", "asd", "ss", "hh")]
         public void CalculateEmotionWords_ShouldReturnNumberOfAppearences(double expectedResult, params string[] words)
         {
-            var result = (double)wordsAnalyzer.CalculatePercentageEmotionWords(words.Select(w => new Token(eTokenType.StringValue, w)).ToList());
+	        Mock.Get(dataFileLoader)
+		        .Setup(loader => loader.Load(It.IsAny<string>()))
+		        .Returns(new List<string> { "unbelievable", "censored" });
+
+            var result = (double)wordsAnalyzer.CalculateEmotionWordsPercentage(words.Select(w => new Token(eTokenType.StringValue, w)).ToList());
+
             Assert.Equal(expectedResult, result);
         }
     }

@@ -10,6 +10,6 @@ namespace Crawler.PartOfSpeechTagger
 		public ePosTagType Type { get; set; }
 
 		[JsonPropertyName("pos")]
-		public string ExtendedType { get; set; }
+		public ePosTagExtendedType ExtendedType { get; set; }
 	}
 }

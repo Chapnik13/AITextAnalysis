@@ -6,7 +6,6 @@ using Crawler.LexicalAnalyzer;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Crawler.PartOfSpeechTagger;
 
@@ -14,16 +13,17 @@ namespace Crawler.Analyzers.UtilAnalyzers
 {
     public class WordsAnalyzer : IWordsAnalyzer
     {
-	    private readonly IOptions<DataFilesConfig> config;
-
         private readonly IDeJargonizer deJargonizer;
         private readonly IPosTagger posTagger;
+        private readonly IOptions<DataFilesConfig> config;
+        private readonly IDataFileLoader dataFileLoader;
 
-        public WordsAnalyzer(IDeJargonizer deJargonizer, IPosTagger posTagger, IOptions<DataFilesConfig> dataFilesConfig)
+        public WordsAnalyzer(IDeJargonizer deJargonizer, IPosTagger posTagger, IOptions<DataFilesConfig> dataFilesConfig, IDataFileLoader dataFileLoader)
         {
             this.deJargonizer = deJargonizer;
             this.posTagger = posTagger;
             this.config = dataFilesConfig;
+            this.dataFileLoader = dataFileLoader;
         }
 
         public int CountWords(List<Token> tokens)
@@ -67,34 +67,28 @@ namespace Crawler.Analyzers.UtilAnalyzers
 
         public int CalculateNumbersAsWords(List<Token> tokens)
         {
+            var digitStrings = dataFileLoader.Load(config.Value.NumbersFile);
             var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
-            var digitStrings = ExtractWordsFromFile(config.Value.NumbersFile);
 
             return words.Count(w => digitStrings.Contains(w.ToLower().RemoveApostrophe()));
         }
 
-        public double CalculatePercentageEmotionWords(List<Token> tokens)
+        public double CalculateEmotionWordsPercentage(List<Token> tokens)
         {
+	        var emotionStrings = dataFileLoader.Load(config.Value.EmotionsFile);
             var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
-            var emotionStrings = ExtractWordsFromFile(config.Value.EmotionsFile);
 
             return words.Count(w => emotionStrings.Contains(w.ToLower().RemoveApostrophe())) / (double)words.Count();
         }
 
         public int CalculateQuestionWords(List<Token> tokens)
         {
+            var questionStrings = dataFileLoader.Load(config.Value.QuestionsFile);
             var words = tokens.GetValuesByTokenTypes(eTokenType.StringValue);
-            var questionStrings = ExtractWordsFromFile(config.Value.QuestionsFile);
 
             return words.Count(w => questionStrings.Contains(w.ToLower().RemoveApostrophe()));
         }
 
-        private IEnumerable<string> ExtractWordsFromFile(string filename)
-        {
-            var filelines = File.ReadAllLines(filename);
-            return filelines.Select(line => line.ToLower());
-        }
-        
         public List<PosTagToken> CalculatePartOfSpeechTags(List<Token> tokens)
         {
 	        return posTagger.Tag(tokens);

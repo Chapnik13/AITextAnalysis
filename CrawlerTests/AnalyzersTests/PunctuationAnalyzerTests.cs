@@ -7,33 +7,34 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using Crawler.PartOfSpeechTagger;
 using Xunit;
 
 namespace CrawlerTests.AnalyzersTests
 {
     public class PunctuationAnalyzerTests
     {
-        private readonly ILexer lexer;
-        private readonly LexerConfig config;
-        private readonly PunctuationAnalyzer punctuationsAnalyzer = new PunctuationAnalyzer();
+	    private ILexer lexer;
+        private LexerConfig config;
+        private PunctuationAnalyzer punctuationsAnalyzer = new PunctuationAnalyzer();
 
         public PunctuationAnalyzerTests()
         {
-            var configOptions = Mock.Of<IOptions<LexerConfig>>();
+	        var configOptions = Mock.Of<IOptions<LexerConfig>>();
 
-            config = new LexerConfig
-            {
-                TokensDefinitions = new[]
-                {
-                    new TokenDefinition {TokenType = eTokenType.StringValue, Pattern = "^[a-zA-Z]+"},
-                    new TokenDefinition {TokenType = eTokenType.Number, Pattern = "^[0-9]+"},
-                    new TokenDefinition {TokenType = eTokenType.Punctuation, Pattern = "^[,\\.?!\"-:]"}
-                }
-            };
+	        config = new LexerConfig
+	        {
+		        TokensDefinitions = new[]
+		        {
+			        new TokenDefinition {TokenType = eTokenType.StringValue, Pattern = "^[a-zA-Z]+"},
+			        new TokenDefinition {TokenType = eTokenType.Number, Pattern = "^[0-9]+"},
+			        new TokenDefinition {TokenType = eTokenType.Punctuation, Pattern = "^[,\\.?!\"-:]"}
+		        }
+	        };
 
-            Mock.Get(configOptions).Setup(c => c.Value).Returns(config);
+	        Mock.Get(configOptions).Setup(c => c.Value).Returns(config);
 
-            lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), configOptions);
+	        lexer = new Lexer(Mock.Of<ILogger<Lexer>>(), configOptions);
         }
 
         [Fact]

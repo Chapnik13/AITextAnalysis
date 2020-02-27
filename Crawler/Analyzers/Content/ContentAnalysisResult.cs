@@ -56,6 +56,9 @@ namespace Crawler.Analyzers.Content
         [Result("Ninth decile of amount of words between punctuation")]
         public float NinthDecileBetweenPunctuation { get; set; }
 
+        [Result("Passive voice percentage")]
+        public float PassiveVoiceSentencesPercentage { get; set; }
+
         [Normalize]
         [Result("Amount of '?'")]
         public int AmountOfQuestionMarks { get; set; }

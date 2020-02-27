@@ -19,7 +19,7 @@ namespace Crawler.Analyzers.UtilAnalyzers
 
         int CalculateNumbersAsWords(List<Token> tokens);
 
-        double CalculatePercentageEmotionWords(List<Token> tokens);
+        double CalculateEmotionWordsPercentage(List<Token> tokens);
 
         int CalculateQuestionWords(List<Token> tokens);
 

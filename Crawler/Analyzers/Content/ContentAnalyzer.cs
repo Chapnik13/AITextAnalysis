@@ -12,14 +12,16 @@ namespace Crawler.Analyzers.Content
 	{
 		private readonly IWordsAnalyzer wordsAnalyzer;
 		private readonly IPunctuationAnalyzer punctuationAnalyzer;
-		private readonly IParagraphAnalyzer paragraphAnalyzer;
+		private readonly IParagraphsAnalyzer paragraphAnalyzer;
+		private readonly ISentencesAnalyzer sentencesAnalyzer;
 
 		public ContentAnalyzer(IWordsAnalyzer wordsAnalyzer, IPunctuationAnalyzer punctuationAnalyzer,
-			IParagraphAnalyzer paragraphAnalyzer)
+			IParagraphsAnalyzer paragraphAnalyzer, ISentencesAnalyzer sentencesAnalyzer)
 		{
 			this.wordsAnalyzer = wordsAnalyzer;
 			this.punctuationAnalyzer = punctuationAnalyzer;
 			this.paragraphAnalyzer = paragraphAnalyzer;
+			this.sentencesAnalyzer = sentencesAnalyzer;
 		}
 
 		public ContentAnalysisResult Analyze(Article<List<Token>> article)
@@ -36,7 +38,7 @@ namespace Crawler.Analyzers.Content
 				AmountOfNumbersAsWords = wordsAnalyzer.CalculateNumbersAsWords(contentAsText),
 				AmountOfNumbersAsDigits = wordsAnalyzer.CalculateNumbersAsDigits(contentAsText),
 				AmountOfQuestionWords = wordsAnalyzer.CalculateQuestionWords(contentAsText),
-				PercentageOfEmotionWords = wordsAnalyzer.CalculatePercentageEmotionWords(contentAsText) * 100,
+				PercentageOfEmotionWords = wordsAnalyzer.CalculateEmotionWordsPercentage(contentAsText) * 100,
 				WordLengthStandardDeviation = wordsAnalyzer.CalculateWordsLengthStandardDeviation(contentAsText),
 				DeJargonizerScore = deJargonizerResult.Score,
 				AmountOfRareWords = deJargonizerResult.RareWords.Count,
@@ -48,6 +50,7 @@ namespace Crawler.Analyzers.Content
 				AmountOfWordsBetweenPunctuationStandardDeviation = punctuationAnalyzer.CalculateWordsCountBetweenPunctuationStandardDeviation(contentAsText),
 				SecondDecileBetweenPunctuation = punctuationAnalyzer.CalculateWordsCountDecile(2, contentAsText),
 				NinthDecileBetweenPunctuation = punctuationAnalyzer.CalculateWordsCountDecile(9, contentAsText),
+				PassiveVoiceSentencesPercentage = sentencesAnalyzer.CalculatePassiveVoiceSentencesPercentage(posTags),
 				AmountOfQuestionMarks = punctuationAnalyzer.CountCharacter('?', contentAsText),
 				AmountOfExclamationMarks = punctuationAnalyzer.CountCharacter('!', contentAsText),
 				AmountOfDashes = punctuationAnalyzer.CountCharacter('-', contentAsText),

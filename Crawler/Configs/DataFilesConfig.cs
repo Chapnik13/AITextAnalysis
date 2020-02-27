@@ -6,5 +6,6 @@
 		public string EmotionsFile { get; set; }
 		public string NumbersFile { get; set; }
 		public string QuestionsFile { get; set; }
+		public string ToBeFormsFile { get; set; }
 	}
 }

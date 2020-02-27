@@ -1,4 +1,5 @@
-﻿using AngleSharp;
+﻿using System.Text.Json.Serialization;
+using AngleSharp;
 using Crawler.Analyzers;
 using Crawler.Analyzers.Content;
 using Crawler.Analyzers.Subtitle;
@@ -50,13 +51,17 @@ namespace Crawler
                 .AddTransient<IBrowsingContextWrapper, BrowsingContextWrapper>()
                 .AddTransient<IScraper, Scraper>()
                 .AddTransient<ILexer, Lexer>()
+                .AddTransient<IDataFileLoader, DataFileLoader>()
                 .AddTransient<IWordsCountLoader, WordsCountLoader>()
                 .AddTransient<IDeJargonizer, DeJargonizeAnalyzer>()
                 .AddTransient<IPosTagger, NodeJSPosTagger>()
-                .AddTransient<IPosTagTypeClassifier, NodeJSPosTagTypeClassifier>()
+                .AddTransient<IPosTagTypeClassifier, PosTagTypeClassifier>()
+                .AddTransient<IPosTagExtendedTypeClassifier, PosTagExtendedTypeClassifier>()
+                .AddTransient<JsonConverter<ePosTagExtendedType>, JsonToEnumPosTagExtendedTypeConverter>()
                 .AddTransient<IWordsAnalyzer, WordsAnalyzer>()
-                .AddTransient<IParagraphAnalyzer, ParagraphAnalyzer>()
+                .AddTransient<IParagraphsAnalyzer, ParagraphsAnalyzer>()
                 .AddTransient<IPunctuationAnalyzer, PunctuationAnalyzer>()
+                .AddTransient<ISentencesAnalyzer, SentencesAnalyzer>()
                 .AddTransient<IAnalyzer<ContentAnalysisResult>, ContentAnalyzer>()
                 .AddTransient<IAnalyzer<TitleAnalysisResult>, TitleAnalyzer>()
                 .AddTransient<IAnalyzer<SubtitleAnalysisResult>, SubtitleAnalyzer>();

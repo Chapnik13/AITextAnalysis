@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Crawler.LexicalAnalyzer;
+﻿using Crawler.LexicalAnalyzer;
+using System.Collections.Generic;
 
 namespace Crawler.Analyzers.UtilAnalyzers
 {
