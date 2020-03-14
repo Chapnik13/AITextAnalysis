@@ -48,4 +48,8 @@
     </None>
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="Start /B /D &quot;../PosTagger&quot; powershell  -executionpolicy bypass ./install-uninstalled-packages.ps1" />
+  </Target>
+
 </Project>
